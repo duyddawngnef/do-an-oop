@@ -1,0 +1,18 @@
+# File của Java
+*.class
+# Thư mục compiled của IDE hoặc build tool
+/bin/
+/target/
+# Thư mục cấu hình của IDE (ví dụ: IntelliJ, Eclipse)
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+# Log và file tạm
+*.log
+temp/
+# Dữ liệu có thể được tạo lại (tùy thuộc vào cách bạn xử lý data/)
+# Nếu data/ là nơi chứa dữ liệu mặc định ban đầu, bạn NÊN giữ lại.
+# Nếu data/ chỉ chứa dữ liệu chạy chương trình, bạn có thể thêm:
+# /data/
