@@ -31,14 +31,38 @@ public abstract class SanPham {
     }
 
     public void nhap() {
-        System.out.print("\nMời Nhập Mã Sản Phẩm :");
-        this.maSP = scanner.nextLine();
+        // mã sản phẩm không được null 
+        do { 
+            System.out.print("\nMời Nhập Mã Sản Phẩm :");
+            this.maSP = scanner.nextLine();
+        } while (this.maSP.isEmpty());
         System.out.print("\nMời Nhập Tên Sản Phẩm :");
         this.tenSP = scanner.nextLine();
-        System.out.print("\nMời Nhập Số Lượng Tồn :");
-        this.soLuongTon = scanner.nextInt();
-        System.out.print("\nMời Nhập Đơn Giá Bán :");
-        this.donGiaBan = scanner.nextInt();
+        do{
+            System.out.print("\nMời Nhập Số Lượng Tồn :");
+            try{
+                this.soLuongTon = Integer.parseInt(scanner.nextLine());
+                if(this.soLuongTon < 0){
+                    System.out.println(" Số lượng tồn phải lớn hơn hoặc bằng 0 !!");
+                }
+            }   
+            catch (NumberFormatException e ){
+                System.out.println("Lỗi :Vui nhập số nguyên hợp lệ !!");
+                this.soLuongTon = -1;
+            }
+        }while (this.soLuongTon < 0 );
+        do{
+            System.out.print("\nMời Nhập Đơn Giá Bán :");
+            try {
+                this.donGiaBan = Integer.parseInt(scanner.nextLine());
+                if(this.donGiaBan < 0){
+                    System.out.println("Đơn giá phải lớn hơn hoặc bằng 0 !!");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Lỗi :Vui nhập số nguyên hợp lệ !!");
+                this.donGiaBan = -1;
+            }
+        }while (this.donGiaBan < 0);
     }
 
     public void xuat() {

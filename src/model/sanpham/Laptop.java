@@ -1,20 +1,29 @@
 package model.sanpham; 
 
-public class LapTop extends SanPham {
+public class Laptop extends SanPham {
     private String cpu;
     private String ram;
-    public  LapTop(){
+    public  Laptop(){
         cpu = "";
         ram = "";
     }
+    // Danh Sách các CPU hợp lệ 
+    private static final String[] VAL_CPU = {
+      "Core i3", "Core i5", "Core i7", "Core i9", 
+        "Ryzen 3", "Ryzen 5", "Ryzen 7", "Ryzen 9", 
+        "M1", "M2", "M3"  
+    };
+    private static final String[] VAL_RAM ={
+        "4GB", "8GB", "16GB", "32GB", "64GB"
+    };
     //thiết lập constructor
-    public LapTop(String maSP , String tenSP , int soLuongTon, int donGiaBan, String cpu , String ram) {
+    public Laptop(String maSP , String tenSP , int soLuongTon, int donGiaBan, String cpu , String ram) {
         super(maSP, tenSP, soLuongTon, donGiaBan);
         this.cpu = cpu;
         this.ram = ram;
     }
     //thiết lập constructor
-    public  LapTop(LapTop lt){
+    public  Laptop(Laptop lt){
         super();
         this.cpu = lt.cpu;
         this.ram = lt.ram;
@@ -23,10 +32,41 @@ public class LapTop extends SanPham {
     //ghi đè hàm nhập(SanPham)
     public void nhap(){
         super.nhap();
-        System.out.println("\nMời Nhập CPU :");
-        this.cpu = scanner.nextLine();
-        System.out.println("\nMời Nhập GAM");
-        this.ram = scanner.nextLine();
+        boolean isCpu,isRam;
+        do {        
+            isCpu = false;
+            //chuyển mảng có tên VAL_CPU thành chuỗi có định dạng []
+            System.out.println("\nDanh sách CPU hổ trợ " + java.util.Arrays.toString(VAL_CPU));
+            System.out.println("Mời nhập CPU : ");
+            //xóa các khoảng trắng thừa 
+            this.cpu = scanner.nextLine().trim();
+            for( String valdCpu : VAL_CPU ){
+                if(valdCpu.equalsIgnoreCase(this.cpu)){
+                    isCpu = true;
+                    break;
+                }
+            }
+            if(!isCpu){
+                 System.out.println("Lỗi CPU không hợp lệ .Vui lòng nhập lại ");
+            }
+
+        } while (!isCpu);
+        do {
+            isRam = false;
+            System.out.println("\nDanh sách GAM hổ trợ là " + java.util.Arrays.toString(VAL_RAM));
+            System.out.println("Mời nhập GAM : ");  
+            this.ram = scanner.nextLine().trim();
+            for(String valRam : VAL_RAM){
+                if (valRam.equalsIgnoreCase(this.ram)){
+                    isRam = true;
+                    break;
+                }
+            }
+            if(!isRam){
+                System.out.println("Lỗi RAM không hợp lệ .Vui lòng nhập lại ");
+            }
+        } while (!isRam);
+        
 
     }
     @Override
