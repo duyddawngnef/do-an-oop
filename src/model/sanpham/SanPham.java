@@ -55,14 +55,14 @@ public abstract class SanPham {
             System.out.print("\nMời Nhập Đơn Giá Bán :");
             try {
                 this.donGiaBan = Integer.parseInt(scanner.nextLine());
-                if(this.donGiaBan < 0){
+                if(this.donGiaBan <= 0){
                     System.out.println("Đơn giá phải lớn hơn hoặc bằng 0 !!");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Lỗi :Vui nhập số nguyên hợp lệ !!");
                 this.donGiaBan = -1;
             }
-        }while (this.donGiaBan < 0);
+        }while (this.donGiaBan <= 0);
     }
 
     public void xuat() {

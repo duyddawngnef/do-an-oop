@@ -8,7 +8,9 @@ public class LinhKien extends SanPham {
         loaiLinhKien = "";
         thongSoKyThuat = "";
     }
-    
+    private static final String[] VAL_LOAI_LINH_KIEN = {
+        "CPU", "RAM", "SSD", "HDD", "VGA", "Mainboard", "PSU"
+    };
     //thiết lập constructor
     public LinhKien(String maSP , String tenSP , int soLuongTon, int donGiaBan, String loaiLinhKien , String thongSoKyThuat) {
         super(maSP, tenSP, soLuongTon, donGiaBan);
@@ -27,8 +29,24 @@ public class LinhKien extends SanPham {
     //ghi đè hàm nhập(SanPham)
     public void nhap(){
         super.nhap();
-        System.out.println("\nMời Nhập Loại Linh Kiện :");
-        this.loaiLinhKien = scanner.nextLine();
+        boolean isLK;
+        do {
+            isLK = false;
+            //chuyển mảng thành chuỗi []
+            System.out.println("\nDanh sách Linh Kiện hổ trợ : " + java.util.Arrays.toString(VAL_LOAI_LINH_KIEN));
+            System.out.println("\nMời Nhập Loại Linh Kiện :");
+            //xóa khoảng trắng thừa
+            this.loaiLinhKien = scanner.nextLine().trim();
+            for(String ValLk : VAL_LOAI_LINH_KIEN){
+                if(ValLk.equalsIgnoreCase(this.loaiLinhKien)){
+                    isLK = true;
+                    break;
+                }
+            }
+            if (!isLK) {
+                System.out.println("Lỗi :Loại Linh Kiện không hợp lệ !!");
+            }
+        } while (!isLK);
         System.out.println("\nMời Nhập Thông Số Kỹ Thuật :");
         this.thongSoKyThuat = scanner.nextLine();
     }

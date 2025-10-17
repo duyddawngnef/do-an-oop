@@ -47,7 +47,7 @@ public class Laptop extends SanPham {
                 }
             }
             if(!isCpu){
-                 System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
+                 System.out.println("Lỗi:Lỗi CPU không hợp lệ!!");
             }
 
         } while (!isCpu);
@@ -63,7 +63,7 @@ public class Laptop extends SanPham {
                 }
             }
             if(!isRam){
-                System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
+                System.out.println("Lỗi:Loại RAM không hợp lệ !!");
             }
         } while (!isRam);
         
