@@ -1,44 +1,36 @@
 package model.banhang;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HoaDon {
     private String maHD;
     private String ngayLap;
     private String maKH;
-    private ChiTietHoaDon[] dsChiTiet;
-    private int soLuongChiTiet; // số lượng sản phẩm trong hóa đơn
+    private ArrayList<ChiTietHoaDon> dsChiTiet; // dùng ArrayList thay cho mảng
+    // private int soLuongChiTiet; // không cần biến này nữa
 
     public HoaDon() {
-        dsChiTiet = new ChiTietHoaDon[0];
-        soLuongChiTiet = 0;
+        dsChiTiet = new ArrayList<>();
+        // soLuongChiTiet = 0;
     }
 
     public HoaDon(String maHD, String ngayLap, String maKH) {
         this.maHD = maHD;
         this.ngayLap = ngayLap;
         this.maKH = maKH;
-        dsChiTiet = new ChiTietHoaDon[0];
-        soLuongChiTiet = 0;
+        dsChiTiet = new ArrayList<>();
+        // soLuongChiTiet = 0;
     }
     public void themChiTiet() {
         ChiTietHoaDon cthd = new ChiTietHoaDon();
         cthd.nhap();
-
-        // Tăng kích thước mảng thêm 1 phần tử
-        ChiTietHoaDon[] temp = new ChiTietHoaDon[soLuongChiTiet + 1];
-        for (int i = 0; i < soLuongChiTiet; i++) {
-            temp[i] = dsChiTiet[i];
-        }
-        temp[soLuongChiTiet] = cthd;
-
-        dsChiTiet = temp;
-        soLuongChiTiet++;
+        dsChiTiet.add(cthd);
     }
 
     public int tinhTongTien() {
         int tong = 0;
-        for (int i = 0; i < soLuongChiTiet; i++) {
-            tong += dsChiTiet[i].getTHANHTIEN();
+        for (ChiTietHoaDon cthd : dsChiTiet) {
+            tong += cthd.getTHANHTIEN();
         }
         return tong;
     }
@@ -52,10 +44,9 @@ public class HoaDon {
         System.out.println("--------------------------------------");
         System.out.printf("%-15s%-12s%-12s%-12s\n", "Mã SP", "Đơn giá", "Số lượng", "Thành tiền");
 
-        for (int i = 0; i < soLuongChiTiet; i++) {
-            dsChiTiet[i].xuat();
+        for (ChiTietHoaDon cthd : dsChiTiet) {
+            cthd.xuat();
         }
-
 
         System.out.println(" Tổng tiền: " + tinhTongTien() + " VND");
     }

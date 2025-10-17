@@ -47,14 +47,14 @@ public class Laptop extends SanPham {
                 }
             }
             if(!isCpu){
-                 System.out.println("Lỗi CPU không hợp lệ .Vui lòng nhập lại ");
+                 System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
             }
 
         } while (!isCpu);
         do {
             isRam = false;
-            System.out.println("\nDanh sách GAM hổ trợ là " + java.util.Arrays.toString(VAL_RAM));
-            System.out.println("Mời nhập GAM : ");  
+            System.out.println("\nDanh sách RAM hổ trợ là " + java.util.Arrays.toString(VAL_RAM));
+            System.out.println("Mời nhập RAM : ");  
             this.ram = scanner.nextLine().trim();
             for(String valRam : VAL_RAM){
                 if (valRam.equalsIgnoreCase(this.ram)){
@@ -63,7 +63,7 @@ public class Laptop extends SanPham {
                 }
             }
             if(!isRam){
-                System.out.println("Lỗi RAM không hợp lệ .Vui lòng nhập lại ");
+                System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
             }
         } while (!isRam);
         
@@ -80,7 +80,7 @@ public class Laptop extends SanPham {
     public String toString(){
         return super.toString()+
                 "CPU : " + getCpu()+"\n"
-                +"GAM : " + getRam() + "\n";
+                +"RAM : " + getRam() + "\n";
     }
     public String getCpu() {
         return cpu;

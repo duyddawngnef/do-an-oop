@@ -1,7 +1,5 @@
 package model.banhang;
 
-import java.io.*;
-import java.text.ParseException;
 import java.util.Scanner;
 public class ChiTietHoaDon {
     private String MaSP;
@@ -47,7 +45,7 @@ public class ChiTietHoaDon {
     }
 
     public void setDONGIA(int donGia) {
-        this.DonGia = DonGia;
+        this.DonGia = donGia;
     }
 
     public void setTenSP(String TenSP) {
