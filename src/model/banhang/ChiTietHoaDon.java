@@ -65,7 +65,7 @@ public class ChiTietHoaDon {
         return this.ThanhTien;
     }
     public void nhap() {
-        Scanner sc = new Scanner(System.in);
+         Scanner sc = new Scanner(System.in);
         System.out.print("Nhập mã sản phẩm: ");
         this.MaSP = sc.nextLine();
         System.out.print("Nhập tên sản phẩm: ");
