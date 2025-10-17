@@ -3,7 +3,6 @@ package ui;
 import java.util.Scanner;
 
 public class SanPhamUI {
-    // Phương thức main là điểm bắt đầu của chương trình
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int luaChon;
