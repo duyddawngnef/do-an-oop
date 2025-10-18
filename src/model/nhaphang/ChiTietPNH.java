@@ -1,3 +1,4 @@
+
 package model.nhaphang;
 import java.util.Scanner;
 
@@ -16,7 +17,8 @@ public class ChiTietPNH {
         this.donGiaNhap = donGiaNhap;
     }
 
-    public void nhap(Scanner sc) {
+    public void nhap() {
+        Scanner sc = new Scanner(System.in);
         System.out.print("Nhập mã SP: ");
         maSP = sc.nextLine();
         System.out.print("Nhập tên SP: ");

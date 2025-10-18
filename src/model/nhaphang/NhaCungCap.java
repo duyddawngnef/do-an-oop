@@ -17,7 +17,8 @@ public class NhaCungCap {
         this.diaChi = diaChi;
     }
 
-    public void nhap(Scanner sc) {
+    public void nhap() {
+        Scanner sc = new Scanner(System.in);
         System.out.print("Nhập mã NCC: ");
         maNCC = sc.nextLine();
         System.out.print("Nhập tên NCC: ");

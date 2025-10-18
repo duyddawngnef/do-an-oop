@@ -1,7 +1,6 @@
 
 package model.nhaphang;
 import java.util.Scanner;
-
 public class PhieuNhapHang {
     private String maPNH;
     private String ngayNhap;
@@ -11,7 +10,8 @@ public class PhieuNhapHang {
 
     public PhieuNhapHang() {}
 
-    public void nhap(Scanner sc) {
+    public void nhap() {
+        Scanner sc = new Scanner(System.in);
         System.out.print("Nhập mã phiếu nhập: ");
         maPNH = sc.nextLine();
         System.out.print("Nhập ngày nhập: ");
@@ -19,7 +19,7 @@ public class PhieuNhapHang {
 
         System.out.println("\n--- Nhập thông tin nhà cung cấp ---");
         nhaCungCap = new NhaCungCap();
-        nhaCungCap.nhap(sc);
+        nhaCungCap.nhap();
 
         System.out.print("\nNhập số sản phẩm: ");
         soSP = sc.nextInt();
@@ -29,7 +29,7 @@ public class PhieuNhapHang {
         for (int i = 0; i < soSP; i++) {
             System.out.println("\n--- Nhập chi tiết sản phẩm " + (i + 1) + " ---");
             dsCT[i] = new ChiTietPNH();
-            dsCT[i].nhap(sc);
+            dsCT[i].nhap();
         }
     }
 
