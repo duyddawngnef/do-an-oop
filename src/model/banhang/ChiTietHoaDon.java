@@ -76,6 +76,7 @@ public class ChiTietHoaDon {
         this.SoLuongBan = sc.nextInt();
         sc.nextLine(); // clear buffer
         this.ThanhTien = this.SoLuongBan * this.DonGia;
+        sc.close();
     }
 
     public void xuat() {
