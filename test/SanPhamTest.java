@@ -1,6 +1,5 @@
 package test;
-import java.lang.*;
-import model.sanpham.LinhKien;
+import model.sanpham.*;
 
 public class SanPhamTest {
     public static void main(String[] args) {

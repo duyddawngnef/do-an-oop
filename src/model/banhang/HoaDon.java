@@ -1,64 +1,45 @@
 package model.banhang;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HoaDon {
     private String maHD;
-    private String ngayLap;
     private String maKH;
-    private ArrayList<ChiTietHoaDon> dsChiTiet; // dùng ArrayList thay cho mảng
-    // private int soLuongChiTiet; // không cần biến này nữa
+    private String ngayLap;
+    private double tongTien;
 
-    public HoaDon() {
-        dsChiTiet = new ArrayList<>();
-        // soLuongChiTiet = 0;
-    }
+    public HoaDon() {}
 
-    public HoaDon(String maHD, String ngayLap, String maKH) {
+    public HoaDon(String maHD, String maKH, String ngayLap, double tongTien) {
         this.maHD = maHD;
-        this.ngayLap = ngayLap;
         this.maKH = maKH;
-        dsChiTiet = new ArrayList<>();
-        // soLuongChiTiet = 0;
-    }
-    public void themChiTiet() {
-        ChiTietHoaDon cthd = new ChiTietHoaDon();
-        cthd.nhap();
-        dsChiTiet.add(cthd);
+        this.ngayLap = ngayLap;
+        this.tongTien = tongTien;
     }
 
-    public int tinhTongTien() {
-        int tong = 0;
-        for (ChiTietHoaDon cthd : dsChiTiet) {
-            tong += cthd.getTHANHTIEN();
-        }
-        return tong;
-    }
-
-    // 🧾 In hóa đơn
-    public void inHoaDon() {
-        System.out.println("\n========== HÓA ĐƠN BÁN HÀNG ==========");
-        System.out.println("Mã hóa đơn: " + maHD);
-        System.out.println("Ngày lập: " + ngayLap);
-        System.out.println("Mã khách hàng: " + maKH);
-        System.out.println("--------------------------------------");
-        System.out.printf("%-15s%-12s%-12s%-12s\n", "Mã SP", "Đơn giá", "Số lượng", "Thành tiền");
-
-        for (ChiTietHoaDon cthd : dsChiTiet) {
-            cthd.xuat();
-        }
-
-        System.out.println(" Tổng tiền: " + tinhTongTien() + " VND");
-    }
-
-    // 🧍 Nhập thông tin cơ bản hóa đơn
-    public void nhapThongTin() {
-        Scanner sc = new Scanner(System.in);
+    public void nhap() {
+        Scanner scanner = new Scanner(System.in);
         System.out.print("Nhập mã hóa đơn: ");
-        maHD = sc.nextLine();
-        System.out.print("Nhập ngày lập: ");
-        ngayLap = sc.nextLine();
+        maHD = scanner.nextLine();
         System.out.print("Nhập mã khách hàng: ");
-        maKH = sc.nextLine();
+        maKH = scanner.nextLine();
+        System.out.print("Nhập ngày lập (dd/mm/yyyy): ");
+        ngayLap = scanner.nextLine();
+        System.out.print("Nhập tổng tiền: ");
+        tongTien = Double.parseDouble(scanner.nextLine());
+        
     }
+
+    public void xuat() {
+        System.out.printf("%-10s || %-10s || %-15s || %.2f\n", maHD, maKH, ngayLap, tongTien);
+    }
+
+    // Getter & Setter
+    public String getMaHD() { return maHD; }
+    public void setMaHD(String maHD) { this.maHD = maHD; }
+    public String getMaKH() { return maKH; }
+    public void setMaKH(String maKH) { this.maKH = maKH; }
+    public String getNgayLap() { return ngayLap; }
+    public void setNgayLap(String ngayLap) { this.ngayLap = ngayLap; }
+    public double getTongTien() { return tongTien; }
+    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
 }

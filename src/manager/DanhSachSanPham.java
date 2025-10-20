@@ -7,7 +7,7 @@ public class DanhSachSanPham {
      public DanhSachSanPham(){
         this.dsSanPham = new SanPham[0];
      }
-     private  void them(){
+     public  void them(){
       Scanner scanner = new Scanner(System.in);
       System.out.println("\n Bạn muốn thêm sản phẩm nào ?");
       System.out.println("1. Laptop");
@@ -42,10 +42,10 @@ public class DanhSachSanPham {
       else{
          add(spMoi);
       }
-      scanner.close();
+      
      }
      //Sửa Sản Phẩm 
-     private void sua(){
+     public  void sua(){
       Scanner scanner = new Scanner(System.in);
       System.out.println("\n Nhập mã Sản Phẩm cần sửa : ");
       String masp = scanner.nextLine().trim();
@@ -58,9 +58,9 @@ public class DanhSachSanPham {
       else{
          System.out.println("Không tìm thấy với mã: " + masp);
       }
-      scanner.close();
+      
      }
-     private void xoa(){
+     public void xoa(){
       Scanner scanner = new Scanner(System.in);
       System.out.println("Nhập mã sản phẩm cần xóa : ");
       String masp = scanner.nextLine().trim();
@@ -76,9 +76,9 @@ public class DanhSachSanPham {
       else{
          System.out.println("\n Không tìm thấy với mã : " + masp);
       }
-      scanner.close();
+      
      }
-     private void hienThiTatCa() {
+     public void hienThiTatCa() {
          if (isEmpty()) {
             System.out.println("Chưa có sản phẩm nào trong danh sách.");
             return;
@@ -92,7 +92,7 @@ public class DanhSachSanPham {
          }
       }
       // Hàm hiển thị theo loại
-      private void hienThiTheoLoai() {
+      public void hienThiTheoLoai() {
          Scanner scanner = new Scanner(System.in);
          System.out.println("Bạn muốn hiển thị loại nào?");
          System.out.println("1. Laptop");
@@ -109,14 +109,14 @@ public class DanhSachSanPham {
                   sp.xuat();
             }
          }
-         scanner.close();
+         
       }
       public void add(SanPham sp){
       System.out.println("Thêm thành công !");
       dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length+1);
       dsSanPham[dsSanPham.length-1] = sp;
      }
-     private boolean kiemTraMaSP(String masp){
+     public boolean kiemTraMaSP(String masp){
       for(SanPham sp : dsSanPham){
          if(masp.equalsIgnoreCase(sp.getMaSP())){
             return true;
@@ -124,7 +124,7 @@ public class DanhSachSanPham {
       }
       return false;
      }
-     private SanPham timSanPhamTheoMa(String masp){
+     public SanPham timSanPhamTheoMa(String masp){
        for(SanPham sp : dsSanPham){
          if(masp.equalsIgnoreCase(sp.getMaSP())){
             return sp;
@@ -132,18 +132,18 @@ public class DanhSachSanPham {
       }
       return null;
      }
-     private void remove(int i ){
+     public void remove(int i ){
       if(i < 0 || i >= dsSanPham.length){
          System.out.println("Vị trí index lỗi !!");
          return ;
       }
-      SanPham removesp = dsSanPham[i];
       int numberRemove = dsSanPham.length -i -1;
       // lấy numbeRemove phần tử của dsSanPham (i+1) và đè lên chính dsSanPham(i)
       System.arraycopy(dsSanPham, i+1, dsSanPham, i, numberRemove);
+      dsSanPham[i]=null;
       System.out.println("Xóa thành công !");
      }
-     private boolean isEmpty(){
+     public boolean isEmpty(){
       if(this.dsSanPham.length == 0 )return true;
       return false;
      }
