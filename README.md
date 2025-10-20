@@ -27,8 +27,6 @@ QuanLyCuaHangMayTinh/
 │   ├── manager/
 │   │   ├── QuanLyCuaHangMayTinh.java          # Lớp trung tâm (Thanh Phú)
 │   │   ├── DanhSachSanPham.java               # Quản lý DS sản phẩm (Duy Đăng)
-│   │   ├── DanhSachLaptop.java                # Quản lý DS laptop (Duy Đăng)
-│   │   ├── DanhSachLinhKien.java              # Quản lý DS linh kiện (Duy Đăng)
 │   │   ├── DanhSachHoaDon.java                # Quản lý DS hóa đơn (Văn Đạt)
 │   │   ├── DanhSachChiTietHoaDon.java         # Quản lý DS chi tiết HD (Văn Đạt)
 │   │   ├── DanhSachKhachHang.java             # Quản lý DS khách hàng (Văn Đạt)
@@ -56,8 +54,6 @@ QuanLyCuaHangMayTinh/
 │
 ├── data/                                       # Thư mục chứa file dữ liệu
 │   ├── DanhSachSanPham.txt                    # Danh sách tất cả sản phẩm
-│   ├── DanhSachLaptop.txt                     # Danh sách laptop
-│   ├── DanhSachLinhKien.txt                   # Danh sách linh kiện
 │   ├── DanhSachHoaDon.txt                     # Danh sách hóa đơn
 │   ├── DanhSachChiTietHoaDon.txt              # Danh sách chi tiết hóa đơn
 │   ├── DanhSachKhachHang.txt                  # Danh sách khách hàng
@@ -69,7 +65,6 @@ QuanLyCuaHangMayTinh/
 ├── docs/                                       # Tài liệu dự án
 │   ├── PhanCongDoAn.docx                      # File phân công
 │   ├── ClassDiagram.png                       # Sơ đồ lớp UML
-│   ├── UseCaseDiagram.png                     # Sơ đồ use case
 │   └── BaoCaoDoAn.docx                        # Báo cáo đồ án
 │
 ├── test/                                       # Thư mục test (optional)
