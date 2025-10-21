@@ -132,6 +132,14 @@ public class DanhSachSanPham {
       }
       return null;
      }
+     public SanPham timSanPhamTheoTen(String tensp){
+      for(SanPham sp : dsSanPham){
+         if(tensp.equalsIgnoreCase(sp.getTenSP())){
+            return sp;
+         }
+      }
+      return null;
+     }
      public void remove(int i ){
       if(i < 0 || i >= dsSanPham.length){
          System.out.println("Vị trí index lỗi !!");
