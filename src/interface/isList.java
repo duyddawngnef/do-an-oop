@@ -9,9 +9,9 @@ public interface isList {
     //xóa
     void xoa();
     //sửa
-    void sua(String ma);
+    void sua();
     //tìm theo mã -> index
-    int timTheoMa(String ma);
+    void timTheoMa();
     //in ds
     void in();
 
