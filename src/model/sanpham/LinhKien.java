@@ -55,7 +55,7 @@ public class LinhKien extends SanPham {
     //ghi đè hàm xuất(SanPham)
     public void xuat(){
         super.xuat();
-        System.out.printf("||%-15s||%s%n", getLoaiLinhKien(), getThongSoKyThuat());
+        System.out.printf("||%-10s||%s\n", getLoaiLinhKien(), getThongSoKyThuat());
     }
     
     @Override

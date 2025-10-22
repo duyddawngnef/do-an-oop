@@ -1,4 +1,5 @@
 package Interface;
+
 public interface isList {
     //đọc file
     void read(String filename);

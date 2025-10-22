@@ -4,6 +4,7 @@ public class Laptop extends SanPham {
     private String cpu;
     private String ram;
     public  Laptop(){
+        super();
         cpu = "";
         ram = "";
     }
@@ -24,7 +25,7 @@ public class Laptop extends SanPham {
     }
     //thiết lập constructor
     public  Laptop(Laptop lt){
-        super();
+        super(lt);
         this.cpu = lt.cpu;
         this.ram = lt.ram;
     }
@@ -83,7 +84,7 @@ public class Laptop extends SanPham {
                 +"RAM : " + getRam() + "\n";
     }
     public String getCpu() {
-        return cpu;
+        return this.cpu;
     }
 
     public void setCpu(String cpu) {
@@ -91,10 +92,19 @@ public class Laptop extends SanPham {
     }
 
     public String getRam() {
-        return ram;
+        return this.ram;
     }
 
     public void setRam(String ram) {
         this.ram = ram;
+    }
+    //xuất danh sách CPU hổ trợ
+    public void dsHoTroCPU(){
+        System.out.println("\nDanh sách CPU hổ trợ " + java.util.Arrays.toString(VAL_CPU));
+    }
+    //xuất danh sách CPU hổ trợ 
+    public void dsHoTroRAM(){
+        System.out.println("\nDanh sách RAM hổ trợ là " + java.util.Arrays.toString(VAL_RAM));
+
     }
 }
