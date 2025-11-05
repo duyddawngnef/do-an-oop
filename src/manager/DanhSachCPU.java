@@ -37,7 +37,7 @@ public class DanhSachCPU implements isList {
                     CPU cpu = new CPU();
                     cpu.setMaCPU(value[0].trim());
                     cpu.setTenCPU(value[1].trim());
-                    cpu.setHangSanXuat(value[3].trim());
+                    cpu.setHangSanXuat(value[2].trim());
                     add(cpu);
                 }
                 // Lỗi: thiếu dữ liệu
@@ -88,27 +88,24 @@ public class DanhSachCPU implements isList {
     @Override
     public void them() {
         Scanner scanner = new Scanner(System.in);
-        try {
-            CPU cpu = new CPU();
-            boolean timthay = true;
-            do {
-                System.out.println("Mời nhập Mã CPU : ");
-                String macpu = scanner.nextLine().trim();
-                cpu.setMaCPU(macpu);
-                timthay = kiemTraMa(macpu);
-                if(timthay){
-                    System.out.println("Lỗi : Mã sản phẩm "+ cpu.getMaCPU() + "đã tồn tại !");
-                }
-            } while (timthay);
-            System.out.println("Mời nhập tên CPU : ");
-            String tencpu = scanner.nextLine().trim();
-            cpu.setTenCPU(tencpu);
-            System.out.println("Mời nhập hãng sản xuất : ");
-            String hangsx = scanner.nextLine().trim();
-            cpu.setHangSanXuat(hangsx);
-        } catch (Exception e) {
-
-        }
+        CPU cpu = new CPU();
+        boolean timthay = true;
+        do {
+            System.out.println("Mời nhập Mã CPU : ");
+            String macpu = scanner.nextLine().trim();
+            cpu.setMaCPU(macpu);
+            timthay = kiemTraMa(macpu);
+            if(timthay){
+                System.out.println("Lỗi : Mã sản phẩm "+ cpu.getMaCPU() + "đã tồn tại !");
+            }
+        } while (timthay);
+        System.out.println("Mời nhập tên CPU : ");
+        String tencpu = scanner.nextLine().trim();
+        cpu.setTenCPU(tencpu);
+        System.out.println("Mời nhập hãng sản xuất : ");
+        String hangsx = scanner.nextLine().trim();
+        cpu.setHangSanXuat(hangsx);
+        add(cpu);
     }
     // xóa
 
@@ -257,8 +254,11 @@ public class DanhSachCPU implements isList {
             System.out.println("Vị trí index lỗi !!");
             return ;
         }
+        if(i < dsCpu.length - 1){
         int numberRemove = dsCpu.length - i  -1;
         System.arraycopy(dsCpu, i+1, dsCpu, i, numberRemove);
+        }
+        dsCpu = Arrays.copyOf(dsCpu, dsCpu.length-1);
         System.err.println("Xóa thành công !");
     }
     
