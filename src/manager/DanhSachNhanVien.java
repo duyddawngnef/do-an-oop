@@ -1,14 +1,14 @@
 package manager;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -36,7 +36,10 @@ public class DanhSachNhanVien implements isList {
     public int getSoLuongNhanVien() {
         return danhSachNhanVien.length;
     }
-
+    //lưu đến cuối 
+    public static int getSoLuong() {
+        return danhSachNhanVien.length;
+    }
     @Override
     public void them() {
         do {

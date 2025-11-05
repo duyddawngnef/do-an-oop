@@ -1,5 +1,4 @@
 package manager;
-import Interface.isList;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,11 +6,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
-import model.sanpham.*;
+
+import Interface.isList;
+import model.sanpham.Laptop;
+import model.sanpham.LinhKien;
+import model.sanpham.SanPham;
 public class DanhSachSanPham implements  isList{
    SanPham[] dsSanPham = new SanPham[0];
    public DanhSachSanPham(){
       this.dsSanPham = new SanPham[0];
+   }
+   public static  SanPham[] getDanhSachSanPham() {
+      return dsSanPham;
    }
    public boolean isEmpty(){
       if(this.dsSanPham.length == 0 ) return true;
@@ -22,55 +28,55 @@ public class DanhSachSanPham implements  isList{
    }
    @Override
    public void read(String filename) {
-   File myFile = new File(filename);
-   try (Scanner myReader = new Scanner(myFile)) {
-      
-      while (myReader.hasNextLine()) {
-            String data = myReader.nextLine();
-            String[] value = data.split(";");
+      File myFile = new File(filename);
+      try (Scanner myReader = new Scanner(myFile)) {
+         
+         while (myReader.hasNextLine()) {
+               String data = myReader.nextLine();
+               String[] value = data.split(";");
 
-            try {
-                  // Xử lý Linh Kiện
-               if (value[0].contains("LK")) {
-                  LinhKien lkSanPham = new LinhKien();
-                  lkSanPham.setMaSP(value[0].trim());
-                  lkSanPham.setTenSP(value[1].trim());
-                  lkSanPham.setSoLuongTon(Integer.parseInt(value[2].trim()));
-                  lkSanPham.setDonGiaBan(Integer.parseInt(value[3].trim()));
-                  lkSanPham.setLoaiLinhKien(value[4].trim());
-                  lkSanPham.setThongSoKyThuat(value[5].trim());
-                  
-                  this.add(lkSanPham); 
-               }
-               else if (value[0].contains("LT")) {
-                  Laptop ltSanPham = new Laptop();
-                  
-                  ltSanPham.setMaSP(value[0].trim());
-                  ltSanPham.setTenSP(value[1].trim());
-                  ltSanPham.setSoLuongTon(Integer.parseInt(value[2].trim()));
-                  ltSanPham.setDonGiaBan(Integer.parseInt(value[3].trim()));
-                  
-                     // Các thuộc tính riêng của Laptop
-                  ltSanPham.setCpu(value[4].trim());
-                  ltSanPham.setRam(value[5].trim());
-                  
-                     this.add(ltSanPham); // Thêm vào danh sách
-               }
+               try {
+                     // Xử lý Linh Kiện
+                  if (value[0].contains("LK")) {
+                     LinhKien lkSanPham = new LinhKien();
+                     lkSanPham.setMaSP(value[0].trim());
+                     lkSanPham.setTenSP(value[1].trim());
+                     lkSanPham.setSoLuongTon(Integer.parseInt(value[2].trim()));
+                     lkSanPham.setDonGiaBan(Integer.parseInt(value[3].trim()));
+                     lkSanPham.setLoaiLinhKien(value[4].trim());
+                     lkSanPham.setThongSoKyThuat(value[5].trim());
+                     
+                     this.add(lkSanPham); 
+                  }
+                  else if (value[0].contains("LT")) {
+                     Laptop ltSanPham = new Laptop();
+                     
+                     ltSanPham.setMaSP(value[0].trim());
+                     ltSanPham.setTenSP(value[1].trim());
+                     ltSanPham.setSoLuongTon(Integer.parseInt(value[2].trim()));
+                     ltSanPham.setDonGiaBan(Integer.parseInt(value[3].trim()));
+                     
+                        // Các thuộc tính riêng của Laptop
+                     ltSanPham.setCpu(value[4].trim());
+                     ltSanPham.setRam(value[5].trim());
+                     
+                        this.add(ltSanPham); // Thêm vào danh sách
+                  }
 
-            }
-            // Lỗi: ép chuỗi -> số
-            catch (NumberFormatException e) {
-               System.out.println("Lỗi định dạng số trên dòng: " + data);
-            }
-            // Lỗi: thiếu dữ liệu
-            catch (ArrayIndexOutOfBoundsException e) {
-               System.out.println("Lỗi thiếu dữ liệu trên dòng: " + data);
-            }
+               }
+               // Lỗi: ép chuỗi -> số
+               catch (NumberFormatException e) {
+                  System.out.println("Lỗi định dạng số trên dòng: " + data);
+               }
+               // Lỗi: thiếu dữ liệu
+               catch (ArrayIndexOutOfBoundsException e) {
+                  System.out.println("Lỗi thiếu dữ liệu trên dòng: " + data);
+               }
+         }
+      } 
+      catch (FileNotFoundException e) {
+            System.out.println("Lỗi: Không tìm thấy file: " + filename);
       }
-   } 
-   catch (FileNotFoundException e) {
-         System.out.println("Lỗi: Không tìm thấy file: " + filename);
-   }
    }
    @Override
    public void write(String filename){
@@ -120,7 +126,7 @@ public class DanhSachSanPham implements  isList{
          }
       }
    }
-    @Override
+   @Override
    public  void them(){
       Scanner scanner = new Scanner(System.in);
    
@@ -596,7 +602,7 @@ public class DanhSachSanPham implements  isList{
       }
       return false;
    }
-   private SanPham timTheoMa(String masp){
+   public  SanPham timTheoMa(String masp){
       for(SanPham sp : dsSanPham){
          if(masp.equalsIgnoreCase(sp.getMaSP())){
             return sp;
@@ -609,10 +615,13 @@ public class DanhSachSanPham implements  isList{
          System.out.println("Vị trí index lỗi !!");
          return ;
       }
-      int numberRemove = dsSanPham.length -i -1;
-      // lấy numbeRemove phần tử của dsSanPham (i+1) và đè lên chính dsSanPham(i)
-      System.arraycopy(dsSanPham, i+1, dsSanPham, i, numberRemove);
-      dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length-1);
+      if(i < dsSanPham.length - 1){
+         int numberRemove = dsSanPham.length -i -1;
+         // lấy numbeRemove phần tử của dsSanPham (i+1) và đè lên chính dsSanPham(i)
+         System.arraycopy(dsSanPham, i+1, dsSanPham, i, numberRemove);
+      }
+
+      dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length-1 );
 
       System.out.println("Xóa thành công !");
    }

@@ -1,7 +1,12 @@
 package manager;
-import model.nhaphang.*;
-import java.util.*;
-import java.io.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+import model.nhaphang.NhaCungCap;
 
 public class DanhSachNhaCungCap {
     private NhaCungCap[] ds = new NhaCungCap[0];
@@ -27,7 +32,10 @@ public class DanhSachNhaCungCap {
         String ma = sc.nextLine();
         int index = -1;
         for (int i = 0; i < ds.length; i++) {
-            if (ds[i].getMaNCC().equalsIgnoreCase(ma)) { index = i; break; }
+            if (ds[i].getMaNCC().equalsIgnoreCase(ma)) {
+                index = i;
+                break;
+            }
         }
         if (index == -1) {
             System.out.println("Không tìm thấy mã NCC!");
@@ -46,16 +54,17 @@ public class DanhSachNhaCungCap {
             return;
         }
         System.out.printf("%-10s %-20s %-25s %-15s\n", "MaNCC", "TenNCC", "DiaChi", "SDT");
-        for (NhaCungCap ncc : ds) ncc.xuat();
+        for (NhaCungCap ncc : ds)
+            ncc.xuat();
     }
-    
-      public void ghiFile(String tenFile) {
+
+    public void ghiFile(String tenFile) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(tenFile))) {
             for (NhaCungCap ncc : ds) {
                 bw.write(ncc.getMaNCC() + ";" +
-                         ncc.getTenNCC() + ";" +
-                         ncc.getDiaChi() + ";" +
-                         ncc.getSdt());
+                        ncc.getTenNCC() + ";" +
+                        ncc.getDiaChi() + ";" +
+                        ncc.getSdt());
                 bw.newLine();
             }
             System.out.println("✅ Đã ghi file " + tenFile);
@@ -63,7 +72,8 @@ public class DanhSachNhaCungCap {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
-     // 🔹 Đọc file dạng CSV (phân tách bằng ;)
+
+    // 🔹 Đọc file dạng CSV (phân tách bằng ;)
     public void docFile(String tenFile) {
         File file = new File(tenFile);
         if (!file.exists()) {
@@ -75,10 +85,12 @@ public class DanhSachNhaCungCap {
             ds = new NhaCungCap[0];
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
-                if (line.isEmpty()) continue;
+                if (line.isEmpty())
+                    continue;
 
                 String[] value = line.split(";");
-                if (value.length < 4) continue;
+                if (value.length < 4)
+                    continue;
 
                 NhaCungCap ncc = new NhaCungCap();
                 ncc.setMaNCC(value[0].trim());
