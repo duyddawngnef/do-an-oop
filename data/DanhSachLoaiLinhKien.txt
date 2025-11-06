@@ -1,0 +1,7 @@
+LK001;CPU;Bộ xử lý trung tâm
+LK002;RAM;Bộ nhớ truy cập ngẫu nhiên
+LK003;SSD;Ổ đĩa thể rắn
+LK004;HDD;Ổ đĩa cứng truyền thống
+LK005;VGA;Card đồ họa/Bộ xử lý đồ họa
+LK006;Mainboard;Bo mạch chủ
+LK007;PSU;Bộ nguồn máy tính

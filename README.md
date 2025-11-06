@@ -1,3 +1,39 @@
+```markdown
+```txt
+ QuanLyCuaHangMayTinh/
+ └── README.md                                   # Hướng dẫn dự án
+ ```
+ 
+ ## Java 21 upgrade
+
+ This repository has been updated with a Maven build configuration that targets Java 21.
+
+ Files changed/added:
+ - `pom.xml` — new Maven POM configured to compile with Java 21 (maven-compiler-plugin release=21) and an enforcer rule requiring Java 21.
+
+ Quick steps to use Java 21 locally (Windows / cmd.exe):
+
+ 1. Install JDK 21 from a vendor of your choice (Adoptium, Oracle, Azul, etc.).
+ 2. Set JAVA_HOME system-wide (run as Administrator):
+
+	 setx JAVA_HOME "C:\Program Files\Java\jdk-21" /M
+	 setx PATH "%JAVA_HOME%\\bin;%PATH%" /M
+
+	 Then open a new cmd window and verify:
+
+	 java -version
+
+ 3. Install Apache Maven (3.9+ recommended). Verify:
+
+	 mvn -v
+
+ 4. Build the project with Maven (from the repo root):
+
+	 mvn -T1C clean test
+
+ Notes:
+ - The `maven-enforcer-plugin` in `pom.xml` requires Java 21 — Maven will fail the build if Java < 21 is used.
+ - If you prefer Gradle or another build tool, let me know and I can add a Gradle configuration instead.
 ```txt
 QuanLyCuaHangMayTinh/
 │

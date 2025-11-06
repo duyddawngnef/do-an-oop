@@ -1,0 +1,11 @@
+CPU01;Core i3;Intel
+CPU02;Core i5;Intel
+CPU03;Core i7;Intel
+CPU04;Core i9;Intel
+CPU05;Ryzen 3;AMD
+CPU06;Ryzen 5;AMD
+CPU07;Ryzen 7;AMD
+CPU08;Ryzen 9;AMD
+CPU09;M1;Apple
+CPU10;M2;Apple
+CPU11;M3;Apple
