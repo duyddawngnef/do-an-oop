@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import model.nhaphang.PhieuNhapHang;
-
+sss
 public class DanhSachPhieuNhapHang {
     private PhieuNhapHang[] ds = new PhieuNhapHang[0];
 

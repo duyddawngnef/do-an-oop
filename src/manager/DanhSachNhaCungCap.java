@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import model.nhaphang.NhaCungCap;
-
+sss
 public class DanhSachNhaCungCap {
     private NhaCungCap[] ds = new NhaCungCap[0];
 

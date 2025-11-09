@@ -175,6 +175,7 @@ public class DanhSachNhanVien implements isList {
                     System.out.print("Nhập lương mới: ");
                     String luongMoi = sc.nextLine();
                     try {
+                        sss
                         Long.parseLong(luongMoi.replace(".", ""));
                         nv.setLuong(luongMoi);
                     } catch (NumberFormatException e) {

@@ -44,7 +44,8 @@ public class DanhSachLoaiLinhKien implements isList {
                     loai.setMaLoai(value[0].trim());
                     loai.setTenLoai(value[1].trim());
                     loai.setMoTa(value[2].trim()); // Giả sử MoTa là trường thứ 3
-                    add(loai);
+                    dsLoai = Arrays.copyOf(dsLoai, dsLoai.length + 1);
+                    dsLoai[dsLoai.length - 1] = loai;
                 }
                 // Lỗi: thiếu dữ liệu
                 catch (ArrayIndexOutOfBoundsException e) {
@@ -93,7 +94,7 @@ public class DanhSachLoaiLinhKien implements isList {
         LoaiLinhKien loai = new LoaiLinhKien();
         boolean timthay = true;
         do {
-            System.out.println("Mời nhập Mã Loại Linh Kiện : ");
+            System.out.print("\nMời nhập Mã Loại Linh Kiện : ");
             String maloai = scanner.nextLine().trim();
             loai.setMaLoai(maloai);
             timthay = kiemTraMa(maloai);
@@ -102,11 +103,11 @@ public class DanhSachLoaiLinhKien implements isList {
             }
         } while (timthay);
 
-        System.out.println("Mời nhập Tên Loại Linh Kiện : ");
+        System.out.print("\nMời nhập Tên Loại Linh Kiện : ");
         String tenloai = scanner.nextLine().trim();
         loai.setTenLoai(tenloai);
         
-        System.out.println("Mời nhập Mô Tả : ");
+        System.out.print("\nMời nhập Mô Tả : ");
         String mota = scanner.nextLine().trim();
         loai.setMoTa(mota);
         
@@ -121,12 +122,12 @@ public class DanhSachLoaiLinhKien implements isList {
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Nhập mã loại linh kiện cần xóa : ");
+        System.out.print("\nNhập mã loại linh kiện cần xóa : ");
         String maloai = scanner.nextLine().trim();
         LoaiLinhKien loaiXoa = timTheoMa(maloai);
         if (loaiXoa != null) {
             for (int i = 0; i < dsLoai.length; i++) {
-                // Sửa: Dùng getMaLoai() để so sánh chính xác.
+                
                 if (dsLoai[i].getMaLoai().equalsIgnoreCase(maloai)) {
                     remove(i);
                     break;
@@ -175,7 +176,7 @@ public class DanhSachLoaiLinhKien implements isList {
                         System.out.println("Đã lưu thay đổi!");
                         break;
                     case 1:
-                        System.out.println("Nhập Tên Loại mới : ");
+                        System.out.print("\nNhập Tên Loại mới : ");
                         String tenMoi = scanner.nextLine().trim();
                         if (!tenMoi.isEmpty()) {
                             loaiSua.setTenLoai(tenMoi);
@@ -212,7 +213,7 @@ public class DanhSachLoaiLinhKien implements isList {
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nNhập mã Loại Linh Kiện : ");
+        System.out.print("\nNhập mã Loại Linh Kiện : ");
         String maloai = scanner.nextLine().trim();
         LoaiLinhKien loai = timTheoMa(maloai);
         if(loai != null){
@@ -233,7 +234,7 @@ public class DanhSachLoaiLinhKien implements isList {
             System.out.println("Chưa có loại linh kiện nào trong danh sách");
             return;
         }
-        System.out.printf("%-15s||%-20s||%-30s\n", "Mã Loại", "Tên Loại", "Mô Tả");
+        System.out.printf("\n%-15s||%-20s||%-30s\n", "Mã Loại", "Tên Loại", "Mô Tả");
         System.out.println("------------------------------------------------------------------");
         for (LoaiLinhKien loai : dsLoai) {
             // Giả sử LoaiLinhKien có phương thức xuat() hoặc in trực tiếp
@@ -249,10 +250,36 @@ public class DanhSachLoaiLinhKien implements isList {
         int[] count  = new int[getSL()];
         for( SanPham sp : dssp.getDanhSachSanPham()){
             if(sp instanceof LinhKien){
-                for(LoaiLinhKien lk : dsLoai){
-
+                for(int i = 0 ; i < getSL();i++){
+                    if(dsLoai[i].getTenLoai().equalsIgnoreCase(((LinhKien) sp).getLoaiLinhKien())){
+                        count[i]++;
+                        break;
+                    }
                 }
             }
+        }
+        System.out.println("\n=== THỐNG KÊ LOẠI LINH KIỆN PHỔ BIẾN ===");
+        System.out.printf("%-15s||%-20s||%-15s\n", "Mã Loại", "Tên Loại", "Số SP Sử Dụng");
+        System.out.println("--------------------------------------------------------");
+        
+        //tìm max
+        for (int i = 0; i < dsLoai.length; i++) {
+            System.out.printf("%-15s||%-20s||%-15d\n", 
+                dsLoai[i].getMaLoai(), 
+                dsLoai[i].getTenLoai(), 
+                count[i]);
+        }
+        // loại phổ biến
+        int maxIndex = 0;
+        for (int i = 1; i < count.length; i++) {
+            if (count[i] > count[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+        
+        if (count[maxIndex] > 0) {
+            System.out.println("\n Loại phổ biến nhất: " + dsLoai[maxIndex].getTenLoai() + 
+                            " (" + count[maxIndex] + " sản phẩm)");
         }
     }
     public boolean kiemTraMaDangSuDung(String ma , DanhSachSanPham dssp){
@@ -275,7 +302,7 @@ public class DanhSachLoaiLinhKien implements isList {
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nNhập tên loại linh kiện cần tìm: ");
+        System.out.print("\nNhập tên loại linh kiện cần tìm: ");
         String tenLoai = scanner.nextLine().trim();
 
         boolean found = false;
@@ -294,6 +321,7 @@ public class DanhSachLoaiLinhKien implements isList {
             System.out.println("Không tìm thấy loại linh kiện với tên: " + tenLoai);
         }
     }
+
     private void add(LoaiLinhKien loai) {
         dsLoai = Arrays.copyOf(dsLoai, dsLoai.length + 1);
         dsLoai[dsLoai.length - 1] = loai;
@@ -325,7 +353,7 @@ public class DanhSachLoaiLinhKien implements isList {
         }
         int numberRemove = dsLoai.length - i - 1;
         System.arraycopy(dsLoai, i + 1, dsLoai, i, numberRemove);
-        dsLoai[getSL()-1] = null;
+        dsLoai = Arrays.copyOf(dsLoai, dsLoai.length-1);
         System.out.println("Xóa thành công !");
-    }
+    } 
 }

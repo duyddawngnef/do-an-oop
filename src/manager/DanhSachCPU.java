@@ -17,6 +17,9 @@ public class DanhSachCPU implements isList {
     public DanhSachCPU() {
         this.dsCpu = new CPU[0];
     }
+    public CPU[] getDanhSachCPU(){
+        return this.dsCpu;
+    }
     public int getSL(){
         return dsCpu.length;
     }
@@ -38,7 +41,8 @@ public class DanhSachCPU implements isList {
                     cpu.setMaCPU(value[0].trim());
                     cpu.setTenCPU(value[1].trim());
                     cpu.setHangSanXuat(value[2].trim());
-                    add(cpu);
+                    dsCpu = Arrays.copyOf(dsCpu,dsCpu.length+1);
+                    dsCpu[dsCpu.length-1] = cpu;
                 }
                 // Lỗi: thiếu dữ liệu
                 catch (ArrayIndexOutOfBoundsException e) {
@@ -91,7 +95,7 @@ public class DanhSachCPU implements isList {
         CPU cpu = new CPU();
         boolean timthay = true;
         do {
-            System.out.println("Mời nhập Mã CPU : ");
+            System.out.print("\nMời nhập Mã CPU : ");
             String macpu = scanner.nextLine().trim();
             cpu.setMaCPU(macpu);
             timthay = kiemTraMa(macpu);
@@ -99,10 +103,10 @@ public class DanhSachCPU implements isList {
                 System.out.println("Lỗi : Mã sản phẩm "+ cpu.getMaCPU() + "đã tồn tại !");
             }
         } while (timthay);
-        System.out.println("Mời nhập tên CPU : ");
+        System.out.print("\nMời nhập tên CPU : ");
         String tencpu = scanner.nextLine().trim();
         cpu.setTenCPU(tencpu);
-        System.out.println("Mời nhập hãng sản xuất : ");
+        System.out.print("\nMời nhập hãng sản xuất : ");
         String hangsx = scanner.nextLine().trim();
         cpu.setHangSanXuat(hangsx);
         add(cpu);
@@ -112,7 +116,7 @@ public class DanhSachCPU implements isList {
     @Override
     public void xoa() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Nhập mã sản phẩm cần xóa : ");
+        System.out.print("\nNhập mã sản phẩm cần xóa : ");
         String macpu = scanner.nextLine().trim();
         CPU cpuxoa = timTheoMa(macpu);
         if(cpuxoa != null){
@@ -160,7 +164,7 @@ public class DanhSachCPU implements isList {
                         System.out.println("Đã lưu thay đổi!");
                         break;
                     case 1:
-                        System.out.println("Nhập tên CPU mới : ");
+                        System.out.print("\nNhập tên CPU mới : ");
                         String tenMoi = scanner.nextLine().trim();
                         if(!tenMoi.isEmpty()){
                             cpusua.setTenCPU(tenMoi);
@@ -200,7 +204,7 @@ public class DanhSachCPU implements isList {
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nNhập mã CPU : ");
+        System.out.print("\nNhập mã CPU : ");
         String macpu = scanner.nextLine().trim();
         boolean flag = false;
         for(CPU cpu : dsCpu){
@@ -221,12 +225,67 @@ public class DanhSachCPU implements isList {
             System.out.println("Chưa có sản phẩm nào trong danh sách");
             return;
         }
-        System.out.printf("%-15s||%-20s||%-15s", "Mã CPU", "Tên CPU", "Hãng Sản Xuâtx");
+        System.out.printf("\n%-15s||%-20s||%-15s\n", "Mã CPU", "Tên CPU", "Hãng Sản Xuất");
         System.out.println("--------------------------------------------------------------------------------------------------");
         for(CPU cpu : dsCpu){
             cpu.xuat();
         }
 
+    }
+    // Thống kê theo hãng
+    public void thongKeTheoHang() {
+        if (isEmpty()) {
+            System.out.println("Danh sách trống!");
+            return;
+        }
+        
+        int countIntel = 0, countAMD = 0, countApple = 0, countKhac = 0;
+        
+        for (CPU cpu : dsCpu) {
+            String hang = cpu.getHangSanXuat().toLowerCase();
+            if (hang.contains("intel")) {
+                countIntel++;
+            } else if (hang.contains("amd")) {
+                countAMD++;
+            } else if (hang.contains("apple")) {
+                countApple++;
+            } else {
+                countKhac++;
+            }
+        }
+        
+        System.out.println("\n=== THỐNG KÊ CPU THEO HÃNG ===");
+        System.out.printf("Intel:  %d CPU (%.1f%%)\n", countIntel, (countIntel * 100.0 / getSL()));
+        System.out.printf("AMD:    %d CPU (%.1f%%)\n", countAMD, (countAMD * 100.0 / getSL()));
+        System.out.printf("Apple:  %d CPU (%.1f%%)\n", countApple, (countApple * 100.0 / getSL()));
+        System.out.printf("Khác:   %d CPU (%.1f%%)\n", countKhac, (countKhac * 100.0 / getSL()));
+        System.out.printf("Tổng:   %d CPU\n", getSL());
+    }
+    // Tìm theo hãng
+    public void timTheoHang() {
+        if (isEmpty()) {
+            System.out.println("Danh sách trống!");
+            return;
+        }
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nNhập tên hãng cần tìm (Intel/AMD/Apple): ");
+        String hang = scanner.nextLine().trim();
+        
+        boolean found = false;
+        System.out.printf("\n%-15s||%-20s||%-15s\n", "Mã CPU", "Tên CPU", "Hãng Sản Xuất");
+        System.out.println("------------------------------------------------------");
+        
+        for (CPU cpu : dsCpu) {
+            if (cpu.getHangSanXuat().toLowerCase().contains(hang.toLowerCase())) {
+                found = true;
+                cpu.xuat();
+            }
+        }
+        
+        if (!found) {
+            System.out.println("Không tìm thấy CPU của hãng: " + hang);
+        }
     }
     private void add(CPU cpu ){
         System.err.println("Thêm thành công !");
