@@ -1,0 +1,4 @@
+BH;Phòng Bán Hàng
+KHO;Phòng Kho & Nhập Hàng
+KT;Phòng Kỹ Thuật & Bảo Hành
+KTTC;Phòng Kế Toán & Hành Chính

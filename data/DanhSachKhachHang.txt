@@ -1,0 +1,20 @@
+KH001;Nguyen Van;An;0901234567;Ha Noi
+KH002;Tran Thi;Bich;0912345678;TP Ho Chi Minh
+KH003;Le Van;Cuong;0923456789;Da Nang
+KH004;Pham Thi;Dung;0934567890;Hai Phong
+KH005;Hoang Van;Tuan;0945678901;Can Tho
+KH006;Nguyen Thi;Hoa;0956789012;Hue
+KH007;Do Van;Long;0967890123;Quang Ninh
+KH008;Bui Thi;Mai;0978901234;Nam Dinh
+KH009;Vu Van;Hung;0989012345;Vinh
+KH010;Ngo Thi;Lan;0990123456;Bac Giang
+KH011;Pham Van;Phuc;0902345678;Ha Nam
+KH012;Tran Thi;Thao;0913456789;Hai Duong
+KH013;Le Van;Dat;0924567890;Thanh Hoa
+KH014;Ho Thi;Nhung;0935678901;Binh Dinh
+KH015;Dang Van;Phuoc;0946789012;Gia Lai
+KH016;Nguyen Thi;Thu;0957890123;Soc Trang
+KH017;Bui Van;Huy;0968901234;Phu Tho
+KH018;Do Thi;Yen;0979012345;Ninh Binh
+KH019;Vu Van;Manh;0980123456;Quang Nam
+KH020;Tran Thi;Huong;0991234567;Bac Ninh
