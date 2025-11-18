@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
-
 import Interface.isList;
 import model.cauhinh.LoaiLinhKien;
 import model.sanpham.LinhKien;
@@ -56,8 +55,6 @@ public class DanhSachLoaiLinhKien implements isList {
             System.out.println("Lỗi : Không tìm thấy file " + filename);
         }
     }
-
-    // Ghi file
     @Override
     public void write(String filename) {
         BufferedWriter myWriter = null;
@@ -201,7 +198,7 @@ public class DanhSachLoaiLinhKien implements isList {
                 }
             }
         } else {
-            System.out.println("Không tìm thấy Loại Linh Kiện với mã: " + maloai);
+            System.out.println("Không tìm thấy loại với mã: " + maloai);
         }
     }
 
@@ -328,9 +325,13 @@ public class DanhSachLoaiLinhKien implements isList {
         System.out.println("Thêm thành công !");
     }
 
-    private boolean kiemTraMa(String maloai) {
+    // Kiểm tra mã loại đã tồn tại
+    private boolean kiemTraMa(String maLoai) {
+        if (maLoai == null || maLoai.trim().isEmpty()) {
+            return true;
+        }
         for (LoaiLinhKien loai : dsLoai) {
-            if (loai.getMaLoai().equalsIgnoreCase(maloai)) {
+            if (loai.getMaLoai().equalsIgnoreCase(maLoai.trim())) {
                 return true;
             }
         }

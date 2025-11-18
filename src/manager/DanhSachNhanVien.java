@@ -33,13 +33,19 @@ public class DanhSachNhanVien implements isList {
         return danhSachNhanVien;
     }
 
+    public boolean coNhanVienThuocPhongBan(String maPhongBan) {
+        for (NhanVien nv : danhSachNhanVien) {
+            if (nv.getMaPhongBan().equalsIgnoreCase(maPhongBan)) {
+                return true; // có nhân viên thuộc phòng này
+            }
+        }
+        return false;
+    }
+
     public int getSoLuongNhanVien() {
         return danhSachNhanVien.length;
     }
-    //lưu đến cuối 
-    public static int getSoLuong() {
-        return danhSachNhanVien.length;
-    }
+
     @Override
     public void them() {
         do {
@@ -150,8 +156,9 @@ public class DanhSachNhanVien implements isList {
             System.out.println("||============================================||");
             System.out.println("|| 1. Sửa họ                                  ||");
             System.out.println("|| 2. Sửa tên                                 ||");
-            System.out.println("|| 3. Sửa ngày làm                            ||");
-            System.out.println("|| 4. Sửa lương                               ||");
+            System.out.println("|| 3. Sửa lương                               ||");
+            System.out.println("|| 4. Sửa ngày làm                            ||");
+            System.out.println("|| 5. Sửa phòng ban                           ||");
             System.out.println("|| 0. Thoát                                   ||");
             System.out.println("||============================================||");
             System.out.print("Chọn: ");
@@ -175,11 +182,10 @@ public class DanhSachNhanVien implements isList {
                     System.out.print("Nhập lương mới: ");
                     String luongMoi = sc.nextLine();
                     try {
-                        sss
                         Long.parseLong(luongMoi.replace(".", ""));
                         nv.setLuong(luongMoi);
                     } catch (NumberFormatException e) {
-                        System.out.println("⚠️ Lương phải là số nguyên!");
+                        System.out.println("Lương phải là số nguyên!");
                     }
 
                     break;
@@ -193,10 +199,36 @@ public class DanhSachNhanVien implements isList {
                             LocalDate date = LocalDate.parse(ngayMoi, formatter);
                             nv.setNgayVaoLam(date);
                         } catch (DateTimeParseException e) {
-                            System.out.println("⚠️ Ngày không hợp lệ! Vui lòng nhập đúng định dạng dd/MM/yyyy.");
+                            System.out.println("Ngày không hợp lệ! Vui lòng nhập đúng định dạng dd/MM/yyyy.");
                         }
                     }
                     break;
+
+                case 5:
+                    DanhSachPhongBan dspb = new DanhSachPhongBan();
+                    System.out.println("\n===== DANH SÁCH PHÒNG BAN HIỆN CÓ =====");
+                    dspb.in();
+
+                    String maMoi;
+                    while (true) {
+                        System.out.print("\nNhập mã phòng ban mới (chỉ chọn từ danh sách trên): ");
+                        maMoi = sc.nextLine().trim().toUpperCase();
+
+                        if (maMoi.isEmpty()) {
+                            System.out.println("Mã phòng ban không được để trống!");
+                            continue;
+                        }
+
+                        if (dspb.tonTaiMaPhongBan(maMoi)) {
+                            nv.setMaPhongBan(maMoi);
+                            System.out.println("Đã cập nhật phòng ban mới cho nhân viên!");
+                            break;
+                        } else {
+                            System.out.println("Mã phòng ban không tồn tại! Vui lòng nhập lại theo danh sách.");
+                        }
+                    }
+                    break;
+
                 case 0:
                     System.out.println(" Đã lưu thay đổi!");
                     break;
@@ -337,19 +369,19 @@ public class DanhSachNhanVien implements isList {
 
         // Dưới 5 triệu
         if (duoi5.isEmpty())
-            System.out.println("Dưới 5 triệu (" + demDuoi5 + " NV): Không có");
+            System.out.println("Dưới 5 triệu : Không có");
         else
             System.out.println("Dưới 5 triệu (" + demDuoi5 + " NV): " + duoi5);
 
         // Từ 5 đến 10 triệu
         if (tu5den10.isEmpty())
-            System.out.println("Từ 5 đến 10 triệu (" + demTu5den10 + " NV): Không có");
+            System.out.println("Từ 5 đến 10 triệu : Không có");
         else
             System.out.println("Từ 5 đến 10 triệu (" + demTu5den10 + " NV): " + tu5den10);
 
         // Trên 10 triệu
         if (tren10.isEmpty())
-            System.out.println("Trên 10 triệu (" + demTren10 + " NV): Không có");
+            System.out.println("Trên 10 triệu : Không có");
         else
             System.out.println("Trên 10 triệu (" + demTren10 + " NV): " + tren10);
 
@@ -359,22 +391,42 @@ public class DanhSachNhanVien implements isList {
 
     public void sapXepNhanVienTheoLuong(boolean tangDan) {
         NhanVien[] temp = Arrays.copyOf(danhSachNhanVien, danhSachNhanVien.length);
-
         for (int i = 0; i < temp.length - 1; i++) {
             for (int j = i + 1; j < temp.length; j++) {
-                long luongI = Long.parseLong(temp[i].getLuong().replace(".", ""));
-                long luongJ = Long.parseLong(temp[j].getLuong().replace(".", ""));
-                if ((tangDan && luongI > luongJ) || (!tangDan && luongI < luongJ)) {
-                    NhanVien tmp = temp[i];
-                    temp[i] = temp[j];
-                    temp[j] = tmp;
+                int luongI = Integer.parseInt(temp[i].getLuong().replace(".", ""));
+                int luongJ = Integer.parseInt(temp[j].getLuong().replace(".", ""));
+                if (tangDan) {
+                    if (luongI > luongJ) {
+                        NhanVien tmp = temp[i];
+                        temp[i] = temp[j];
+                        temp[j] = tmp;
+                    }
+                } else {
+
+                    if (luongI < luongJ) {
+                        NhanVien tmp = temp[i];
+                        temp[i] = temp[j];
+                        temp[j] = tmp;
+                    }
                 }
             }
         }
+        String trangThai;
+        if (tangDan) {
+            trangThai = "TĂNG DẦN";
+        } else {
+            trangThai = "GIẢM DẦN";
+        }
 
-        System.out.println("\n===== DANH SÁCH NHÂN VIÊN THEO LƯƠNG " + (tangDan ? "TĂNG DẦN" : "GIẢM DẦN") + " =====");
-        System.out.printf("%-15s | %-20s\n", "Mã NV", "Lương");
-        System.out.println("-----------------------------------------");
+        // In tiêu đề danh sách nhân viên theo lương
+        System.out.println();
+        System.out.println("===== DANH SÁCH NHÂN VIÊN THEO LƯƠNG " + trangThai + " =====");
+
+        // In tiêu đề các cột
+        System.out.printf("%-15s | %-20s%n", "Mã Nhân Viên", "Lương");
+
+        // In dòng phân cách
+        System.out.println("----------------------------------------------------");
 
         for (NhanVien nv : temp) {
             String luongHienThi = nv.getLuong();
@@ -393,7 +445,6 @@ public class DanhSachNhanVien implements isList {
         }
     }
 
-    // 🔹 HÀM THỐNG KÊ THEO THÂM NIÊN
     public void thongKeTheoThamNien() {
         NhanVien[] ds = DanhSachNhanVien.danhSachNhanVien;
         if (ds == null || ds.length == 0) {
@@ -411,7 +462,7 @@ public class DanhSachNhanVien implements isList {
                     LocalDate now = LocalDate.now();
                     Period period = Period.between(nv.getNgayVaoLam(), now);
                     int namLam = period.getYears();
-                    if (namLam < 1 && namLam >= 0) {
+                    if (namLam < 1) {
                         duoi1Nam += nv.getMaNhanVien() + "  ";
                         demDuoi1++;
                     } else if (namLam < 3) {
@@ -437,24 +488,24 @@ public class DanhSachNhanVien implements isList {
 
         // Dưới 1 năm
         if (duoi1Nam.isEmpty())
-            System.out.println("Năm công tác dưới 1 năm (" + demDuoi1 + " NV): Không có");
+            System.out.println("Không có");
         else
             System.out.println("Năm công tác dưới 1 năm (" + demDuoi1 + " NV): " + duoi1Nam);
 
         // Dưới 3 năm
         if (duoi3Nam.isEmpty())
-            System.out.println("Năm công tác dưới 3 năm (" + demDuoi3 + " NV): Không có");
+            System.out.println("Không có");
         else
             System.out.println("Năm công tác dưới 3 năm (" + demDuoi3 + " NV): " + duoi3Nam);
 
         // dưới 5 năm
         if (duoi5Nam.isEmpty())
-            System.out.println("Năm công tác dưới 5 năm (" + demDuoi5 + " NV): Không có");
+            System.out.println("Không có");
         else
             System.out.println("Năm công tác dưới 5 năm (" + demDuoi5 + " NV): " + duoi5Nam);
         // dưới 10 năm
         if (duoi10Nam.isEmpty())
-            System.out.println("Năm công tác dưới 10 năm (" + demDuoi10 + " NV): Không có");
+            System.out.println("Không có");
         else
             System.out.println("Năm cô  ng tác dưới 10 năm (" + demDuoi10 + " NV): " + duoi10Nam);
 

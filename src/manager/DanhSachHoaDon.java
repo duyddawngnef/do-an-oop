@@ -25,17 +25,12 @@ public class DanhSachHoaDon implements isList {
 
     private static final String FILE_HOADON = "data\\DanhSachHoaDon.txt";
 
-    // Tham chiếu đến các danh sách khác
-    private DanhSachNhanVien dsNhanVien;
-    private DanhSachKhachHang dsKhachHang;
-    private DanhSachSanPham danhSachSanPham;
+    // Không giữ tham chiếu danh sách khác tại đây
 
     // --- Constructor ---
-    public DanhSachHoaDon(DanhSachNhanVien dsNhanVien, DanhSachKhachHang dsKhachHang, DanhSachSanPham danhSachSanPham) {
+
+    public DanhSachHoaDon() {
         this.danhSachHoaDon = new HoaDon[0];
-        this.dsNhanVien = dsNhanVien;
-        this.dsKhachHang = dsKhachHang;
-        this.danhSachSanPham = danhSachSanPham;
     }
 
     // --- Getters & Hàm tiện ích ---
@@ -44,7 +39,7 @@ public class DanhSachHoaDon implements isList {
     }
 
     public HoaDon timTheoMaHoaDon(String maHoaDon) {
-        for(HoaDon hoaDon : danhSachHoaDon) {
+        for (HoaDon hoaDon : danhSachHoaDon) {
             if (hoaDon.getMaHoaDon().equalsIgnoreCase(maHoaDon)) {
                 return hoaDon;
             }
@@ -77,17 +72,16 @@ public class DanhSachHoaDon implements isList {
         }
 
         try (BufferedWriter boGhi = new BufferedWriter(new FileWriter(tenFileGhi, false))) {
-            for(HoaDon hd : danhSachHoaDon) {
+            for (HoaDon hd : danhSachHoaDon) {
                 boGhi.write(hd.toFileString());
                 boGhi.newLine();
 
-                // Ghi chi tiết hóa đơn vào file riêng
-                hd.getDanhSachChiTietHoaDon().write(hd.getMaHoaDon());
+                // Ghi chi tiết hóa đơn được xử lý tại lớp quản lý chi tiết riêng
             }
 
-            System.out.println("✓ Ghi danh sách hóa đơn thành công vào file: " + tenFileGhi);
+            System.out.println(" Ghi danh sách hóa đơn thành công vào file: " + tenFileGhi);
         } catch (IOException e) {
-            System.err.println(" ✗ Lỗi khi ghi danh sách hóa đơn: " + e.getMessage());
+            System.err.println("  Lỗi khi ghi danh sách hóa đơn: " + e.getMessage());
         }
     }
 
@@ -107,18 +101,16 @@ public class DanhSachHoaDon implements isList {
         int soDong = 0;
 
         try (Scanner boDoc = new Scanner(file)) {
-            while(boDoc.hasNextLine()) {
+            while (boDoc.hasNextLine()) {
                 soDong++;
                 String duLieu = boDoc.nextLine();
-                if (duLieu.trim().isEmpty()) continue;
+                if (duLieu.trim().isEmpty())
+                    continue;
 
                 try {
                     HoaDon hoaDon = HoaDon.fromFileString(duLieu);
 
-                    // Truyền danhSachSanPham vào constructor
-                    DanhSachChiTietHoaDon danhSachChiTietHoaDon = new DanhSachChiTietHoaDon(danhSachSanPham);
-                    danhSachChiTietHoaDon.read(hoaDon.getMaHoaDon());
-                    hoaDon.setDanhSachChiTietHoaDon(danhSachChiTietHoaDon);
+
 
                     if (kiemTraMaHoaDon(hoaDon.getMaHoaDon())) {
                         System.out.println("Dòng " + soDong + ": Mã hóa đơn trùng lặp, bỏ qua.");
@@ -131,44 +123,41 @@ public class DanhSachHoaDon implements isList {
                         soLuongThanhCong++;
                     }
                 } catch (ParseException | NumberFormatException e) {
-                    System.err.println("⚠ Lỗi phân tích dữ liệu dòng " + soDong + ": " + e.getMessage());
+                    System.err.println(" Lỗi phân tích dữ liệu dòng " + soDong + ": " + e.getMessage());
                     soLuongLoi++;
                 } catch (IllegalArgumentException e) {
-                    System.err.println("⚠ Lỗi định dạng dòng " + soDong + ": " + e.getMessage());
+                    System.err.println("Lỗi định dạng dòng " + soDong + ": " + e.getMessage());
                     soLuongLoi++;
                 }
             }
-            System.out.println("✓ Đọc file thành công! Số hóa đơn hợp lệ: " + soLuongThanhCong + (soLuongLoi > 0 ? " (" + soLuongLoi + " lỗi)" : ""));
+            System.out.println(" Đọc file thành công! Số hóa đơn hợp lệ: " + soLuongThanhCong
+                    + (soLuongLoi > 0 ? " (" + soLuongLoi + " lỗi)" : ""));
 
         } catch (FileNotFoundException e) {
-            System.err.println("✗ Lỗi: Không tìm thấy file hóa đơn: " + tenFileDoc);
+            System.err.println(" Lỗi: Không tìm thấy file hóa đơn: " + tenFileDoc);
         }
     }
 
     @Override
     public void them() {
         Scanner sc = new Scanner(System.in);
-        int tiepTuc = 1;
 
-        if (dsNhanVien == null || dsKhachHang == null) {
-            System.err.println("Lỗi: Không thể thực hiện thêm hóa đơn do thiếu dữ liệu NV/KH.");
-            return;
-        }
+        int tiepTuc = 1;
 
         do {
             System.out.println("\n========== NHẬP HÓA ĐƠN MỚI ==========");
             HoaDon hoaDon = new HoaDon();
 
-            hoaDon.nhap(this.dsNhanVien, this.dsKhachHang);
+            hoaDon.nhap();
 
             if (!hoaDon.validate()) {
-                System.out.println("✗ Dữ liệu hóa đơn không hợp lệ (Mã, Chi tiết,...)! Hủy thao tác.");
+                System.out.println(" Dữ liệu hóa đơn không hợp lệ (Mã, Chi tiết,...)! Hủy thao tác.");
             } else if (this.kiemTraMaHoaDon(hoaDon.getMaHoaDon())) {
-                System.out.println("✗ Lỗi: Mã hóa đơn đã tồn tại. Vui lòng nhập lại.");
+                System.out.println(" Lỗi: Mã hóa đơn đã tồn tại. Vui lòng nhập lại.");
             } else {
                 themVaoMang(hoaDon);
                 write(FILE_HOADON);
-                System.out.println("✓ Thêm hóa đơn " + hoaDon.getMaHoaDon() + " thành công.");
+                System.out.println(" Thêm hóa đơn " + hoaDon.getMaHoaDon() + " thành công.");
             }
 
             System.out.print("Bạn có tiếp tục nhập hóa đơn không? (1: tiếp tục / 0: dừng lại): ");
@@ -177,7 +166,7 @@ public class DanhSachHoaDon implements isList {
             } catch (NumberFormatException e) {
                 tiepTuc = 0;
             }
-        } while(tiepTuc == 1);
+        } while (tiepTuc == 1);
     }
 
     @Override
@@ -187,7 +176,7 @@ public class DanhSachHoaDon implements isList {
         String maHoaDon = sc.nextLine().trim();
 
         int viTri = -1;
-        for(int i = 0; i < danhSachHoaDon.length; ++i) {
+        for (int i = 0; i < danhSachHoaDon.length; ++i) {
             if (danhSachHoaDon[i].getMaHoaDon().equalsIgnoreCase(maHoaDon)) {
                 viTri = i;
                 break;
@@ -195,19 +184,18 @@ public class DanhSachHoaDon implements isList {
         }
 
         if (viTri == -1) {
-            System.err.println("✗ Không tìm thấy hóa đơn có mã: " + maHoaDon);
+            System.err.println(" Không tìm thấy hóa đơn có mã: " + maHoaDon);
             return;
         }
 
         // Xóa hóa đơn
         HoaDon hdCanXoa = danhSachHoaDon[viTri];
-        DanhSachChiTietHoaDon dsCTHD = hdCanXoa.getDanhSachChiTietHoaDon();
 
         // Xóa khỏi mảng
         System.arraycopy(danhSachHoaDon, viTri + 1, danhSachHoaDon, viTri, danhSachHoaDon.length - 1 - viTri);
         danhSachHoaDon = Arrays.copyOf(danhSachHoaDon, danhSachHoaDon.length - 1);
         write(FILE_HOADON);
-        System.out.println("✓ Đã xóa hóa đơn có mã: " + maHoaDon);
+        System.out.println(" Đã xóa hóa đơn có mã: " + maHoaDon);
     }
 
     @Override
@@ -218,7 +206,7 @@ public class DanhSachHoaDon implements isList {
 
         HoaDon hd = timTheoMaHoaDon(maHoaDon);
         if (hd == null) {
-            System.out.println("✗ Không tìm thấy hóa đơn với mã: " + maHoaDon);
+            System.out.println(" Không tìm thấy hóa đơn với mã: " + maHoaDon);
             return;
         }
 
@@ -235,33 +223,25 @@ public class DanhSachHoaDon implements isList {
         } else if (luaChon.equals("2")) {
             quanLyChiTietHoaDon(hd, sc);
         } else {
-            System.out.println("→ Hủy thao tác sửa.");
+            System.out.println(" Hủy thao tác sửa.");
         }
 
         hd.getTongGiaHoaDon();
         write(FILE_HOADON);
-        System.out.println("✓ Cập nhật hóa đơn hoàn tất.");
+        System.out.println(" Cập nhật hóa đơn hoàn tất.");
     }
 
     private void suaThongTinCoBan(HoaDon hoaDon, Scanner sc) {
         System.out.print("Nhập mã nhân viên mới (Enter để bỏ qua): ");
         String maNhanVienMoi = sc.nextLine().trim();
         if (!maNhanVienMoi.isEmpty()) {
-            if (dsNhanVien.timTheoMa(maNhanVienMoi) != null) {
-                hoaDon.setMaNhanVien(maNhanVienMoi);
-            } else {
-                System.err.println("⚠ Mã NV không tồn tại. Bỏ qua cập nhật NV.");
-            }
+            hoaDon.setMaNhanVien(maNhanVienMoi);
         }
 
         System.out.print("Nhập mã khách hàng mới (Enter để bỏ qua): ");
         String maKhachHangMoi = sc.nextLine().trim();
         if (!maKhachHangMoi.isEmpty()) {
-            if (dsKhachHang.timMaKhachHang(maKhachHangMoi) != null) {
-                hoaDon.setMaKhachHang(maKhachHangMoi);
-            } else {
-                System.err.println("⚠ Mã KH không tồn tại. Bỏ qua cập nhật KH.");
-            }
+            hoaDon.setMaKhachHang(maKhachHangMoi);
         }
 
         System.out.print("Nhập ngày tạo hóa đơn mới dd/MM/yyyy (Enter để bỏ qua): ");
@@ -271,14 +251,15 @@ public class DanhSachHoaDon implements isList {
             try {
                 hoaDon.setNgayTaoHoaDon(dinhDangNgay.parse(ngayTaoMoi));
             } catch (ParseException e) {
-                System.err.println("✗ Lỗi định dạng ngày. Ngày tạo không được cập nhật.");
+                System.err.println(" Lỗi định dạng ngày. Ngày tạo không được cập nhật.");
             }
         }
-        System.out.println("✓ Đã cập nhật thông tin cơ bản.");
+        System.out.println(" Đã cập nhật thông tin cơ bản.");
     }
 
     private void quanLyChiTietHoaDon(HoaDon hoaDon, Scanner sc) {
-        DanhSachChiTietHoaDon dsCTHD = hoaDon.getDanhSachChiTietHoaDon();
+        DanhSachChiTietHoaDon dsCTHD = new DanhSachChiTietHoaDon();
+        dsCTHD.read(hoaDon.getMaHoaDon());
 
         System.out.println("\n--- MENU QUẢN LÝ CHI TIẾT ---");
         System.out.println("1. Thêm sản phẩm mới vào Hóa đơn");
@@ -299,9 +280,9 @@ public class DanhSachHoaDon implements isList {
             String maSP = sc.nextLine().trim();
             dsCTHD.xoa(maSP);
         } else {
-            System.out.println("→ Hủy thao tác quản lý chi tiết.");
+            System.out.println(" Hủy thao tác quản lý chi tiết.");
         }
-        hoaDon.getDanhSachChiTietHoaDon().write(hoaDon.getMaHoaDon());
+        dsCTHD.write(hoaDon.getMaHoaDon());
     }
 
     @Override
@@ -311,7 +292,7 @@ public class DanhSachHoaDon implements isList {
         System.out.println("Tổng số hóa đơn: " + danhSachHoaDon.length);
         System.out.println("=======================================================");
 
-        for(HoaDon hd : danhSachHoaDon) {
+        for (HoaDon hd : danhSachHoaDon) {
             hd.xuat();
         }
     }
@@ -324,10 +305,10 @@ public class DanhSachHoaDon implements isList {
 
         HoaDon hd = this.timTheoMaHoaDon(maHoaDon);
         if (hd != null) {
-            System.out.println("✓ Đã tìm thấy hóa đơn:");
+            System.out.println(" Đã tìm thấy hóa đơn:");
             hd.xuat();
         } else {
-            System.out.println("✗ Không tìm thấy hóa đơn có mã: " + maHoaDon);
+            System.out.println(" Không tìm thấy hóa đơn có mã: " + maHoaDon);
         }
     }
 
@@ -359,7 +340,7 @@ public class DanhSachHoaDon implements isList {
                     int[] viTriNV = this.timTheoMaNhanVien(maNhanVien);
                     if (viTriNV.length > 0) {
                         System.out.println("=== KẾT QUẢ TRA CỨU THEO MÃ NV: " + maNhanVien + " ===");
-                        for(int i = 0; i < viTriNV.length; ++i) {
+                        for (int i = 0; i < viTriNV.length; ++i) {
                             danhSachHoaDon[viTriNV[i]].xuat();
                         }
                     } else {
@@ -372,7 +353,7 @@ public class DanhSachHoaDon implements isList {
                     int[] viTriKH = this.timTheoMaKhachHang(maKhachHang);
                     if (viTriKH.length > 0) {
                         System.out.println("=== KẾT QUẢ TRA CỨU THEO MÃ KH: " + maKhachHang + " ===");
-                        for(int i = 0; i < viTriKH.length; ++i) {
+                        for (int i = 0; i < viTriKH.length; ++i) {
                             danhSachHoaDon[viTriKH[i]].xuat();
                         }
                     } else {
@@ -389,12 +370,12 @@ public class DanhSachHoaDon implements isList {
             } catch (NumberFormatException e) {
                 tiepTuc = 0;
             }
-        } while(tiepTuc == 1);
+        } while (tiepTuc == 1);
     }
 
     public int[] timTheoMaNhanVien(String maNhanVien) {
         int[] viTri = new int[0];
-        for(int i = 0; i < danhSachHoaDon.length; ++i) {
+        for (int i = 0; i < danhSachHoaDon.length; ++i) {
             if (danhSachHoaDon[i].getMaNhanVien().toLowerCase().contains(maNhanVien.toLowerCase())) {
                 viTri = Arrays.copyOf(viTri, viTri.length + 1);
                 viTri[viTri.length - 1] = i;
@@ -405,7 +386,7 @@ public class DanhSachHoaDon implements isList {
 
     public int[] timTheoMaKhachHang(String maKhachHang) {
         int[] viTri = new int[0];
-        for(int i = 0; i < danhSachHoaDon.length; ++i) {
+        for (int i = 0; i < danhSachHoaDon.length; ++i) {
             if (danhSachHoaDon[i].getMaKhachHang().toLowerCase().contains(maKhachHang.toLowerCase())) {
                 viTri = Arrays.copyOf(viTri, viTri.length + 1);
                 viTri[viTri.length - 1] = i;
@@ -414,40 +395,21 @@ public class DanhSachHoaDon implements isList {
         return viTri;
     }
 
-    // Class nội bộ để lưu thông tin doanh thu từng sản phẩm
-    private class ThongTinDoanhThu {
-        String maSanPham;
-        long tongDoanhThu;
 
-        ThongTinDoanhThu(String maSanPham, long tongDoanhThu) {
-            this.maSanPham = maSanPham;
-            this.tongDoanhThu = tongDoanhThu;
-        }
-    }
-
-    private class ThongKeDoanhThu {
-        String maSP;
-        long doanhThu;
-
-        ThongKeDoanhThu(String maSP, long doanhThu) {
-            this.maSP = maSP;
-            this.doanhThu = doanhThu;
-        }
-    }
-
-    // ĐÃ SỬA: Không dùng Map, chỉ dùng mảng
     public void thongKeTheoDoanhThu() {
-        if (danhSachSanPham == null) {
+        if (QuanLyCuaHangMayTinh.dssp == null) {
             System.err.println("Lỗi: DanhSachSanPham chưa được khởi tạo!");
             return;
         }
 
-        // Tạo mảng lưu thống kê doanh thu
-        ThongKeDoanhThu[] thongKe = new ThongKeDoanhThu[0];
+        // Tạo mảng lưu thống kê doanh thu (song song)
+        String[] maSPArr = new String[0];
+        long[] doanhThuArr = new long[0];
 
         // Duyệt qua tất cả hóa đơn
         for (HoaDon hoaDon : danhSachHoaDon) {
-            DanhSachChiTietHoaDon danhSachChiTietHoaDon = hoaDon.getDanhSachChiTietHoaDon();
+            DanhSachChiTietHoaDon danhSachChiTietHoaDon = new DanhSachChiTietHoaDon();
+            danhSachChiTietHoaDon.read(hoaDon.getMaHoaDon());
 
             for (int k = 0; k < danhSachChiTietHoaDon.getSoluong(); k++) {
                 ChiTietHoaDon cthd = danhSachChiTietHoaDon.viTri(k);
@@ -456,69 +418,64 @@ public class DanhSachHoaDon implements isList {
                     long tongGia = cthd.getTongGia();
 
                     // Tìm xem sản phẩm đã có trong mảng thống kê chưa
-                    boolean timThay = false;
-                    for (int i = 0; i < thongKe.length; i++) {
-                        if (thongKe[i].maSP.equalsIgnoreCase(maSP)) {
-                            thongKe[i].doanhThu += tongGia;
-                            timThay = true;
+                    int idx = -1;
+                    for (int i = 0; i < maSPArr.length; i++) {
+                        if (maSPArr[i].equalsIgnoreCase(maSP)) {
+                            idx = i;
                             break;
                         }
                     }
-
-                    // Nếu chưa có, thêm mới vào mảng
-                    if (!timThay) {
-                        thongKe = Arrays.copyOf(thongKe, thongKe.length + 1);
-                        thongKe[thongKe.length - 1] = new ThongKeDoanhThu(maSP, tongGia);
+                    if (idx == -1) {
+                        maSPArr = Arrays.copyOf(maSPArr, maSPArr.length + 1);
+                        doanhThuArr = Arrays.copyOf(doanhThuArr, doanhThuArr.length + 1);
+                        maSPArr[maSPArr.length - 1] = maSP;
+                        doanhThuArr[doanhThuArr.length - 1] = tongGia;
+                    } else {
+                        doanhThuArr[idx] += tongGia;
                     }
                 }
             }
         }
 
         // Sắp xếp mảng theo doanh thu giảm dần (Bubble Sort)
-        for (int i = 0; i < thongKe.length - 1; i++) {
-            for (int j = 0; j < thongKe.length - i - 1; j++) {
-                if (thongKe[j].doanhThu < thongKe[j + 1].doanhThu) {
+        for (int i = 0; i < doanhThuArr.length - 1; i++) {
+            for (int j = 0; j < doanhThuArr.length - i - 1; j++) {
+                if (doanhThuArr[j] < doanhThuArr[j + 1]) {
                     // Hoán đổi
-                    ThongKeDoanhThu temp = thongKe[j];
-                    thongKe[j] = thongKe[j + 1];
-                    thongKe[j + 1] = temp;
+                    long tmpVal = doanhThuArr[j];
+                    doanhThuArr[j] = doanhThuArr[j + 1];
+                    doanhThuArr[j + 1] = tmpVal;
+                    String tmpMa = maSPArr[j];
+                    maSPArr[j] = maSPArr[j + 1];
+                    maSPArr[j + 1] = tmpMa;
                 }
             }
         }
 
         // In kết quả
         System.out.println("\n=== THỐNG KÊ DOANH THU THEO SẢN PHẨM ===");
-        for (int i = 0; i < thongKe.length; i++) {
-            SanPham sp = danhSachSanPham.timTheoMa(thongKe[i].maSP);
-            String tenSP = (sp != null) ? sp.getTenSP() : "Không tìm thấy SP (" + thongKe[i].maSP + ")";
-            System.out.printf("%-40s | Doanh thu: %,d VND\n", tenSP, thongKe[i].doanhThu);
+        for (int i = 0; i < maSPArr.length; i++) {
+            SanPham sp = QuanLyCuaHangMayTinh.dssp.timTheoMa(maSPArr[i]);
+            String tenSP = (sp != null) ? sp.getTenSP() : "Không tìm thấy SP (" + maSPArr[i] + ")";
+            System.out.printf("%-40s | Doanh thu: %,d VND\n", tenSP, doanhThuArr[i]);
         }
     }
 
-    // Class nội bộ để lưu thông tin số lượng sản phẩm bán
-    private class ThongKeSoLuong {
-        String maSP;
-        int soLuong;
 
-        ThongKeSoLuong(String maSP, int soLuong) {
-            this.maSP = maSP;
-            this.soLuong = soLuong;
-        }
-    }
-
-    // ĐÃ SỬA: Không dùng Map, List, chỉ dùng mảng
     public void thongKeTheoSoLuongSanPham() {
-        if (danhSachSanPham == null) {
+        if (QuanLyCuaHangMayTinh.dssp == null) {
             System.err.println("Lỗi: DanhSachSanPham chưa được khởi tạo!");
             return;
         }
 
-        // Tạo mảng lưu thống kê số lượng
-        ThongKeSoLuong[] thongKe = new ThongKeSoLuong[0];
+        // Tạo mảng lưu thống kê số lượng (song song)
+        String[] maSPArr = new String[0];
+        int[] soLuongArr = new int[0];
 
         // Duyệt qua tất cả hóa đơn
         for (HoaDon hoaDon : danhSachHoaDon) {
-            DanhSachChiTietHoaDon danhSachChiTietHoaDon = hoaDon.getDanhSachChiTietHoaDon();
+            DanhSachChiTietHoaDon danhSachChiTietHoaDon = new DanhSachChiTietHoaDon();
+            danhSachChiTietHoaDon.read(hoaDon.getMaHoaDon());
 
             for (int k = 0; k < danhSachChiTietHoaDon.getSoluong(); k++) {
                 ChiTietHoaDon cthd = danhSachChiTietHoaDon.viTri(k);
@@ -526,67 +483,70 @@ public class DanhSachHoaDon implements isList {
                     String maSP = cthd.getMaSanPham();
                     int soLuong = cthd.getSoLuongSP();
 
-                    // Tìm xem sản phẩm đã có trong mảng thống kê chưa
-                    boolean timThay = false;
-                    for (int i = 0; i < thongKe.length; i++) {
-                        if (thongKe[i].maSP.equalsIgnoreCase(maSP)) {
-                            thongKe[i].soLuong += soLuong;
-                            timThay = true;
+                    int idx = -1;
+                    for (int i = 0; i < maSPArr.length; i++) {
+                        if (maSPArr[i].equalsIgnoreCase(maSP)) {
+                            idx = i;
                             break;
                         }
                     }
-
-                    // Nếu chưa có, thêm mới vào mảng
-                    if (!timThay) {
-                        thongKe = Arrays.copyOf(thongKe, thongKe.length + 1);
-                        thongKe[thongKe.length - 1] = new ThongKeSoLuong(maSP, soLuong);
+                    if (idx == -1) {
+                        maSPArr = Arrays.copyOf(maSPArr, maSPArr.length + 1);
+                        soLuongArr = Arrays.copyOf(soLuongArr, soLuongArr.length + 1);
+                        maSPArr[maSPArr.length - 1] = maSP;
+                        soLuongArr[soLuongArr.length - 1] = soLuong;
+                    } else {
+                        soLuongArr[idx] += soLuong;
                     }
                 }
             }
         }
 
         // Sắp xếp mảng theo số lượng giảm dần (Bubble Sort)
-        for (int i = 0; i < thongKe.length - 1; i++) {
-            for (int j = 0; j < thongKe.length - i - 1; j++) {
-                if (thongKe[j].soLuong < thongKe[j + 1].soLuong) {
+        for (int i = 0; i < soLuongArr.length - 1; i++) {
+            for (int j = 0; j < soLuongArr.length - i - 1; j++) {
+                if (soLuongArr[j] < soLuongArr[j + 1]) {
                     // Hoán đổi
-                    ThongKeSoLuong temp = thongKe[j];
-                    thongKe[j] = thongKe[j + 1];
-                    thongKe[j + 1] = temp;
+                    int tmpVal = soLuongArr[j];
+                    soLuongArr[j] = soLuongArr[j + 1];
+                    soLuongArr[j + 1] = tmpVal;
+                    String tmpMa = maSPArr[j];
+                    maSPArr[j] = maSPArr[j + 1];
+                    maSPArr[j + 1] = tmpMa;
                 }
             }
         }
 
         // In kết quả
         System.out.println("\n=== THỐNG KÊ SỐ LƯỢNG SẢN PHẨM BÁN RA ===");
-        for (int i = 0; i < thongKe.length; i++) {
-            SanPham sp = danhSachSanPham.timTheoMa(thongKe[i].maSP);
+        for (int i = 0; i < maSPArr.length; i++) {
+            SanPham sp = QuanLyCuaHangMayTinh.dssp.timTheoMa(maSPArr[i]);
             if (sp != null) {
                 String loaiSP = "";
                 if (sp instanceof Laptop) {
-                    Laptop laptop = (Laptop)sp;
+                    Laptop laptop = (Laptop) sp;
                     loaiSP = " (Laptop: " + laptop.getCpu() + "/" + laptop.getRam() + ")";
                 } else if (sp instanceof LinhKien) {
-                    LinhKien linhKien = (LinhKien)sp;
+                    LinhKien linhKien = (LinhKien) sp;
                     loaiSP = " (Linh Kiện: " + linhKien.getLoaiLinhKien() + ")";
                 }
-                System.out.printf("%-40s bán được: %d sản phẩm\n", sp.getTenSP() + loaiSP, thongKe[i].soLuong);
+                System.out.printf("%-40s bán được: %d sản phẩm\n", sp.getTenSP() + loaiSP, soLuongArr[i]);
             }
         }
 
         // Tóm tắt min/max
-        if (thongKe.length > 0) {
+        if (soLuongArr.length > 0) {
             System.out.println("\n--- TÓM TẮT ---");
 
             // Sản phẩm bán chạy nhất (đầu mảng sau khi sắp xếp)
-            String maMax = thongKe[0].maSP;
-            int slMax = thongKe[0].soLuong;
-            SanPham spMax = danhSachSanPham.timTheoMa(maMax);
+            String maMax = maSPArr[0];
+            int slMax = soLuongArr[0];
+            SanPham spMax = QuanLyCuaHangMayTinh.dssp.timTheoMa(maMax);
 
             // Sản phẩm bán ít nhất (cuối mảng sau khi sắp xếp)
-            String maMin = thongKe[thongKe.length - 1].maSP;
-            int slMin = thongKe[thongKe.length - 1].soLuong;
-            SanPham spMin = danhSachSanPham.timTheoMa(maMin);
+            String maMin = maSPArr[soLuongArr.length - 1];
+            int slMin = soLuongArr[soLuongArr.length - 1];
+            SanPham spMin = QuanLyCuaHangMayTinh.dssp.timTheoMa(maMin);
 
             if (spMax != null) {
                 System.out.println("Sản phẩm bán chạy nhất: " + spMax.getTenSP() + " (" + slMax + " sản phẩm)");
@@ -615,7 +575,7 @@ public class DanhSachHoaDon implements isList {
 
         System.out.println("=== THỐNG KÊ THEO NĂM " + year + " ===");
 
-        for(HoaDon hoaDon : danhSachHoaDon) {
+        for (HoaDon hoaDon : danhSachHoaDon) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(hoaDon.getNgayTaoHoaDon());
             int hoaDonYear = cal.get(Calendar.YEAR);
@@ -627,9 +587,9 @@ public class DanhSachHoaDon implements isList {
                 int quy = hoaDonMonth / 3;
 
                 doanhThuQuy[quy] += hoaDon.getTongGiaHoaDon();
-
-                DanhSachChiTietHoaDon danhSachChiTietHoaDon = hoaDon.getDanhSachChiTietHoaDon();
-                for(int k = 0; k < danhSachChiTietHoaDon.getSoluong(); ++k) {
+                DanhSachChiTietHoaDon danhSachChiTietHoaDon = new DanhSachChiTietHoaDon();
+                danhSachChiTietHoaDon.read(hoaDon.getMaHoaDon());
+                for (int k = 0; k < danhSachChiTietHoaDon.getSoluong(); ++k) {
                     ChiTietHoaDon cthd = danhSachChiTietHoaDon.viTri(k);
                     if (cthd != null) {
                         soLuongQuy[quy] += cthd.getSoLuongSP();
@@ -641,6 +601,30 @@ public class DanhSachHoaDon implements isList {
         for (int i = 0; i < 4; i++) {
             System.out.printf("Quý %d: Bán được %,d sản phẩm, Doanh thu: %,d VND\n",
                     i + 1, soLuongQuy[i], doanhThuQuy[i]);
+        }
+    }
+    public void test(Date start , Date end){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+        try {
+            start = sdf.parse(sdf.format(start));
+            end = sdf.parse(sdf.format(end));
+        } catch (ParseException e) {
+            return;
+        }
+        Calendar calDay2 = Calendar.getInstance();
+        calDay2.setTime(end);
+        calDay2.add(Calendar.DATE,1);
+        Date endChuan = calDay2.getTime();
+        if(start.compareTo(end)<=0){
+            for(HoaDon hd : danhSachHoaDon){
+                Date ngaytam = null;
+                try {
+                    ngaytam = sdf.parse(sdf.format(hd.getNgayTaoHoaDon()));
+                } catch (ParseException e) {
+                    continue;
+                }
+                
+            }
         }
     }
 
@@ -661,7 +645,7 @@ public class DanhSachHoaDon implements isList {
         Date day2Inclusive = calDay2.getTime();
 
         if (day1.compareTo(day2) <= 0) {
-            for(HoaDon hoaDon : danhSachHoaDon) {
+            for (HoaDon hoaDon : danhSachHoaDon) {
                 Date ngayTao = null;
                 try {
                     // Dùng SDF để loại bỏ yếu tố thời gian (HH:mm:ss) khỏi ngày tạo hóa đơn
@@ -687,7 +671,7 @@ public class DanhSachHoaDon implements isList {
         int minYear = Integer.MAX_VALUE;
         int maxYear = Integer.MIN_VALUE;
 
-        for(HoaDon hoaDon : danhSachHoaDon) {
+        for (HoaDon hoaDon : danhSachHoaDon) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(hoaDon.getNgayTaoHoaDon());
             int currentYear = cal.get(Calendar.YEAR);
@@ -699,11 +683,12 @@ public class DanhSachHoaDon implements isList {
             }
         }
 
-        if (minYear == Integer.MAX_VALUE) return; // Trường hợp không có hóa đơn
+        if (minYear == Integer.MAX_VALUE)
+            return; // Trường hợp không có hóa đơn
 
         System.out.println("\n=== THỐNG KÊ DOANH THU THEO NĂM (Từ " + minYear + " đến " + maxYear + ") ===");
 
-        for(int year = minYear; year <= maxYear; year++) {
+        for (int year = minYear; year <= maxYear; year++) {
 
             Calendar calDay1 = Calendar.getInstance();
             calDay1.set(year, Calendar.JANUARY, 1, 0, 0, 0);
@@ -722,4 +707,15 @@ public class DanhSachHoaDon implements isList {
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+    
 }

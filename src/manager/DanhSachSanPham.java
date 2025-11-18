@@ -13,14 +13,16 @@ import model.sanpham.LinhKien;
 import model.sanpham.SanPham;
 public class DanhSachSanPham implements  isList{
    SanPham[] dsSanPham = new SanPham[0];
+
    public DanhSachSanPham(){
-      this.dsSanPham = new SanPham[0];
+      dsSanPham = new SanPham[0];
+
    }
-   public static  SanPham[] getDanhSachSanPham() {
+   public SanPham[] getDanhSachSanPham() {
       return dsSanPham;
    }
    public boolean isEmpty(){
-      if(this.dsSanPham.length == 0 ) return true;
+      if(dsSanPham.length == 0 ) return true;
       return false;
    }
    public int getSoLuongSanPham(){
@@ -46,7 +48,8 @@ public class DanhSachSanPham implements  isList{
                      lkSanPham.setLoaiLinhKien(value[4].trim());
                      lkSanPham.setThongSoKyThuat(value[5].trim());
                      
-                     this.add(lkSanPham); 
+                     dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length+1);
+                     dsSanPham[dsSanPham.length-1] = lkSanPham;
                   }
                   else if (value[0].contains("LT")) {
                      Laptop ltSanPham = new Laptop();
@@ -60,7 +63,8 @@ public class DanhSachSanPham implements  isList{
                      ltSanPham.setCpu(value[4].trim());
                      ltSanPham.setRam(value[5].trim());
                      
-                        this.add(ltSanPham); // Thêm vào danh sách
+                     dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length+1);
+                     dsSanPham[dsSanPham.length-1] = ltSanPham;
                   }
 
                }
@@ -97,7 +101,7 @@ public class DanhSachSanPham implements  isList{
                            lt.getRam();
             }
             if (dsSanPham[i] instanceof LinhKien) {
-                // ép kiểu về LinhKien
+               // ép kiểu về LinhKien
                LinhKien lk = (LinhKien) dsSanPham[i];
                
                dataLine = lk.getMaSP() + ";" +
@@ -127,41 +131,209 @@ public class DanhSachSanPham implements  isList{
       }
    }
    @Override
-   public  void them(){
+   public void them(){
       Scanner scanner = new Scanner(System.in);
-   
+      
       int loaiSP = 0;
+      String maSP;
+      String tenSP;
+      int soLuongTon;
+      int donGiaBan;
+      String ram, cpu, loaiLinhKien, thongSoKyThuat;
+      boolean timThay = false;
+      
+      // ===== CHỌN LOẠI SẢN PHẨM =====
       do {
          try {
-            System.out.println("\n Bạn muốn thêm sản phẩm nào ?");
-            System.out.println("1. Laptop");
-            System.out.println("2. Linh kiện");
-            System.out.println("Lựa chọn : ");
-            loaiSP = Integer.parseInt(scanner.nextLine());
-            if(loaiSP != 1 && loaiSP != 2){
-               System.out.println("Số lượng không hợp lệ !!");
-            }
+               System.out.println("\n Bạn muốn thêm sản phẩm nào?");
+               System.out.println("1. Laptop");
+               System.out.println("2. Linh kiện");
+               System.out.print("Lựa chọn: ");
+               loaiSP = Integer.parseInt(scanner.nextLine());
+               if(loaiSP != 1 && loaiSP != 2){
+                  System.out.println("Số lựa chọn không hợp lệ!!");
+               }
          } 
          catch (NumberFormatException e) {
-            loaiSP = 0;
-            System.out.println("Lỗi: Vui lòng nhập số nguyên!!");
+               loaiSP = 0;
+               System.out.println("Lỗi: Vui lòng nhập số nguyên!!");
          }
       } while (loaiSP != 1 && loaiSP != 2);
+      
       SanPham spMoi;
-      if(loaiSP ==1){
+      if(loaiSP == 1){
          spMoi = new Laptop();
       }
       else{
          spMoi = new LinhKien();
       }
-      spMoi.nhap();
-      boolean timthhay = kiemTraMaSP(spMoi.getMaSP());
-      if(timthhay){
-         System.out.println("Lỗi : Mã sản phẩm "+ spMoi.getMaSP() + "đã tồn tại !");
+      
+      // nhập sản phẩm 
+      do { 
+         System.out.print("\nMời Nhập Mã Sản Phẩm: ");
+         maSP = scanner.nextLine().trim();
+         
+         if (maSP.isEmpty()) {
+               System.out.println("Lỗi: Mã sản phẩm không được để trống!");
+               timThay = true;
+               continue;
+         }
+         
+         // Kiểm tra tiền tố mã phù hợp với loại sản phẩm
+         if(loaiSP == 1 && !maSP.toUpperCase().startsWith("LT")){
+               System.out.println("Lỗi: Mã Laptop phải bắt đầu bằng 'LT'!");
+               timThay = true;
+               continue;
+         }
+         if(loaiSP == 2 && !maSP.toUpperCase().startsWith("LK")){
+               System.out.println("Lỗi: Mã Linh Kiện phải bắt đầu bằng 'LK'!");
+               timThay = true;
+               continue;
+         }
+         
+         // kiểm tra tồn tại 
+         timThay = kiemTraMaSP(maSP);
+         if(timThay){
+               System.out.println("Lỗi: Mã sản phẩm '" + maSP + "' đã tồn tại!");
+         }
+         else{
+               spMoi.setMaSP(maSP);
+         }
+      } while (maSP.isEmpty() || timThay);
+      
+      // nhập tên
+      do {
+         System.out.print("\nMời Nhập Tên Sản Phẩm: ");
+         tenSP = scanner.nextLine().trim();
+         if(tenSP.isEmpty()){
+               System.out.println("Lỗi: Tên sản phẩm không được để trống!");
+         }
+      } while(tenSP.isEmpty());
+      spMoi.setTenSP(tenSP);
+      
+      // số lượng tồn 
+      do{
+         System.out.print("\nMời Nhập Số Lượng Tồn: ");
+         try{
+               soLuongTon = Integer.parseInt(scanner.nextLine());
+               if(soLuongTon < 0){
+                  System.out.println("Số lượng tồn phải lớn hơn hoặc bằng 0!!");
+               }
+         }   
+         catch (NumberFormatException e){
+               System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
+               soLuongTon = -1;
+         }
+      }while (soLuongTon < 0);
+      spMoi.setSoLuongTon(soLuongTon);
+      
+      // đơn giá
+      do{
+         System.out.print("\nMời Nhập Đơn Giá Bán: ");
+         try {
+               donGiaBan = Integer.parseInt(scanner.nextLine());
+               if(donGiaBan <= 0){
+                  System.out.println("Đơn giá phải lớn hơn 0!!");
+               }
+         } catch (NumberFormatException e) {
+               System.out.println("Lỗi: Vui lòng nhập số nguyên hợp lệ!!");
+               donGiaBan = -1;
+         }
+      }while (donGiaBan <= 0);
+      spMoi.setDonGiaBan(donGiaBan);
+      
+      //LAPTOP
+      if(spMoi instanceof Laptop){
+         Laptop lt = (Laptop)spMoi;
+         boolean isCpu, isRam;
+         
+         // CPU
+         do {        
+               isCpu = false;
+               String[] danhSachCPU = Laptop.getDanhSachCpu();
+               System.out.println("\nDanh sách CPU hỗ trợ: " + java.util.Arrays.toString(danhSachCPU));
+               System.out.print("Mời nhập CPU: ");
+               cpu = scanner.nextLine().trim();
+               
+               if(cpu.isEmpty()){
+                  System.out.println("Lỗi: CPU không được để trống!");
+                  continue;
+               }
+               
+               // Kiểm tra CPU có hợp lệ không (đã sửa logic)
+               isCpu = Laptop.kiemTraCpuHopLe(cpu);
+               if(!isCpu){
+                  System.out.println("Lỗi: CPU '" + cpu + "' không hợp lệ! Vui lòng chọn trong danh sách.");
+               }
+               else{
+                  lt.setCpu(cpu);
+               }
+         } while (!isCpu);
+         
+         // RAM
+         do {
+               isRam = false;
+               String[] danhSachRAM = Laptop.getDanhSachDungLuongRam();
+               System.out.println("\nDanh sách RAM hỗ trợ: " + java.util.Arrays.toString(danhSachRAM));
+               System.out.print("Mời nhập RAM: ");  
+               ram = scanner.nextLine().trim();
+               
+               if(ram.isEmpty()){
+                  System.out.println("Lỗi: RAM không được để trống!");
+                  continue;
+               }
+               
+               // Kiểm tra RAM có hợp lệ không (đã sửa logic)
+               isRam = Laptop.kiemTraDungLuongRam(ram);
+               if(!isRam){
+                  System.out.println("Lỗi: Dung lượng RAM '" + ram + "' không hợp lệ! Vui lòng chọn trong danh sách.");
+               }
+               else{
+                  lt.setRam(ram);
+               }
+         } while (!isRam);
       }
-      else{
-         add(spMoi);
+      // LINH KIỆN
+      else if (spMoi instanceof LinhKien){
+         LinhKien lk = (LinhKien)spMoi;
+         boolean isLK;
+         
+         // LOẠI LINH KIỆN
+         do {
+               isLK = false;
+               String[] danhSachLoaiLK = LinhKien.getLoaiLinhKienHopLe();
+               System.out.println("\nDanh sách Loại Linh Kiện hỗ trợ: " + java.util.Arrays.toString(danhSachLoaiLK));
+               System.out.print("\nMời Nhập Loại Linh Kiện: ");
+               loaiLinhKien = scanner.nextLine().trim();
+               
+               if(loaiLinhKien.isEmpty()){
+                  System.out.println("Lỗi: Loại linh kiện không được để trống!");
+                  continue;
+               }
+               
+               // kiểm tra hợp lệ
+               isLK = LinhKien.kiemTraHopLe(loaiLinhKien);
+               if (!isLK) {
+                  System.out.println("Lỗi: Loại Linh Kiện '" + loaiLinhKien + "' không hợp lệ! Vui lòng chọn trong danh sách.");
+               }
+               else{
+                  lk.setLoaiLinhKien(loaiLinhKien);
+               }
+         } while (!isLK);
+         
+         // THÔNG SỐ KỸ THUẬT 
+         do {
+               System.out.print("\nMời Nhập Thông Số Kỹ Thuật: ");
+               thongSoKyThuat = scanner.nextLine().trim();
+               if(thongSoKyThuat.isEmpty()){
+                  System.out.println("Lỗi: Thông số kỹ thuật không được để trống!");
+               }
+         } while(thongSoKyThuat.isEmpty());
+         lk.setThongSoKyThuat(thongSoKyThuat);
       }
+      
+      //thêm sản phẩm
+      add(spMoi);
    }
    @Override
    public void xoa(){
@@ -181,7 +353,7 @@ public class DanhSachSanPham implements  isList{
          System.out.println("\n Không tìm thấy với mã : " + masp);
       }
    }
-     //Sửa Sản Phẩm
+   //Sửa Sản Phẩm
 
    @Override
    public void sua(){
@@ -329,7 +501,7 @@ public class DanhSachSanPham implements  isList{
             return;
          }
          System.out.println("DANH SÁCH TẤT CẢ SẢN PHẨM:");
-         System.out.printf("%-15s||%-20s||%-15s||%-15s||%-15s||%s\n", "Mã SP", "Tên SP", "Số Lượng Tồn", "Đơn Giá Bán", "Loại/CPU", "Thông số/RAM");
+         System.out.printf("%-15s||%-20s||%-15s||%-15s||%-10s||%s\n", "Mã SP", "Tên SP", "Số Lượng Tồn", "Đơn Giá Bán", "Loại/CPU", "Thông số/RAM");
          System.out.println("--------------------------------------------------------------------------------------------------");
          //hiển thị đa hình 
          for (SanPham sp : dsSanPham) {
@@ -354,6 +526,7 @@ public class DanhSachSanPham implements  isList{
          }
 
       }
+
    // Hàm hiển thị theo loại
    public void hienThiTheoLoai() {
       Scanner scanner = new Scanner(System.in);
@@ -505,93 +678,151 @@ public class DanhSachSanPham implements  isList{
       System.out.printf("Tổng số lượng hàng tồn kho: %,d\n", tongsl);
       System.out.printf("Tổng giá trị tồn kho:         %,d VND\n", tongiatri);
    }
-   // thống kê sản phẩm theo loại (Laptop , Linh Kiện)
-   public void thongKeSanPhamTheoLoai(){
-       if(isEmpty()){
+      // Thống kê sản phẩm theo loại (Laptop, Linh Kiện)
+   public void thongKeSanPhamTheoLoai() {
+      if (isEmpty()) {
          System.out.println("Danh sách Sản Phẩm trống !!");
-         System.out.println("Tổng số lượng Laptop : 0 ");
-         System.out.println("Tổng số lượng Linh Kiện : 0 ");
+         System.out.println("Tổng số lượng Laptop : 0");
+         System.out.println("Tổng số lượng Linh Kiện : 0");
+         return;
       }
-      // các loại CPU hổ trợ 
-      String[] VAL_CPU = {
-      "Core i3", "Core i5", "Core i7", "Core i9", 
-      "Ryzen 3", "Ryzen 5", "Ryzen 7", "Ryzen 9", 
-      "M1", "M2", "M3"  
-      };
-      // các loại RAM hổ trợ 
-      String[] VAL_RAM ={
-      "4GB", "8GB", "16GB", "32GB", "64GB"
-      };
-      // các loại linh kiện hổ trợ 
-      String[] VAL_LOAI_LINH_KIEN = {
-      "CPU", "RAM", "SSD", "HDD", "VGA", "Mainboard", "PSU"
-      };
+
+      // Thu thập các giá trị CPU/RAM/Loại LK trực tiếp từ dữ liệu hiện có
+      String[] VAL_CPU = new String[0];
+      String[] VAL_RAM = new String[0];
+      String[] VAL_LOAI_LINH_KIEN = new String[0];
+      for (SanPham sp : dsSanPham) {
+         if (sp instanceof Laptop) {
+            Laptop ltTmp = (Laptop) sp;
+            String cpu = ltTmp.getCpu();
+            String ram = ltTmp.getRam();
+            boolean foundCpu = false, foundRam = false;
+            for (int i = 0; i < VAL_CPU.length; i++) {
+               if (VAL_CPU[i].equalsIgnoreCase(cpu)) { foundCpu = true; break; }
+            }
+            for (int i = 0; i < VAL_RAM.length; i++) {
+               if (VAL_RAM[i].equalsIgnoreCase(ram)) { foundRam = true; break; }
+            }
+            if (!foundCpu) {
+               VAL_CPU = java.util.Arrays.copyOf(VAL_CPU, VAL_CPU.length + 1);
+               VAL_CPU[VAL_CPU.length - 1] = cpu;
+            }
+            if (!foundRam) {
+               VAL_RAM = java.util.Arrays.copyOf(VAL_RAM, VAL_RAM.length + 1);
+               VAL_RAM[VAL_RAM.length - 1] = ram;
+            }
+         } else if (sp instanceof LinhKien) {
+            String loai = ((LinhKien) sp).getLoaiLinhKien();
+            boolean foundLoai = false;
+            for (int i = 0; i < VAL_LOAI_LINH_KIEN.length; i++) {
+               if (VAL_LOAI_LINH_KIEN[i].equalsIgnoreCase(loai)) { foundLoai = true; break; }
+            }
+            if (!foundLoai) {
+               VAL_LOAI_LINH_KIEN = java.util.Arrays.copyOf(VAL_LOAI_LINH_KIEN, VAL_LOAI_LINH_KIEN.length + 1);
+               VAL_LOAI_LINH_KIEN[VAL_LOAI_LINH_KIEN.length - 1] = loai;
+            }
+         }
+      }
+
       int slLT = 0;
       int slLK = 0;
-      //mảng điếm loại linh kiện 
+
+      // Mảng đếm loại
       int[] cntCPU = new int[VAL_CPU.length];
       int[] cntRAM = new int[VAL_RAM.length];
       int[] cntLK = new int[VAL_LOAI_LINH_KIEN.length];
-      for(SanPham sp : dsSanPham){
-         if(sp instanceof Laptop){
-            slLT++;
-            Laptop lt = (Laptop)sp;
-            // điếm cpu 
-            for(int i = 0 ; i < VAL_CPU.length; i++){
-               if(VAL_CPU[i].equalsIgnoreCase(lt.getCpu())){
-                  cntCPU[i]++;
-                  break;
+
+      // Đếm số lượng
+      for (SanPham sp : dsSanPham) {
+         if (sp instanceof Laptop) {
+               slLT++;
+               Laptop lt = (Laptop) sp;
+               
+               // Điếm CPU
+               for (int i = 0; i < VAL_CPU.length; i++) {
+                  if (VAL_CPU[i].equalsIgnoreCase(lt.getCpu())) {
+                     cntCPU[i]++;
+                     break;
+                  }
                }
-            }
-            //điếm RAM 
-            for(int i = 0 ; i < VAL_RAM.length; i++){
-               if(VAL_RAM[i].equalsIgnoreCase(lt.getRam())){
-                  cntRAM[i]++;
-                  break;
+               
+               // Điếm RAM
+               for (int i = 0; i < VAL_RAM.length; i++) {
+                  if (VAL_RAM[i].equalsIgnoreCase(lt.getRam())) {
+                     cntRAM[i]++;
+                     break;
+                  }
                }
-            }
          }
-         if (sp instanceof LinhKien){
-            slLK++;
-            //điếm linh kiện 
-            LinhKien lk = (LinhKien) sp;
-            for(int i = 0 ; i < VAL_LOAI_LINH_KIEN.length; i++){
-               if(VAL_LOAI_LINH_KIEN[i].equalsIgnoreCase(lk.getLoaiLinhKien())){
-                  cntLK[i]++;
-                  break;
+         
+         if (sp instanceof LinhKien) {
+               slLK++;
+               LinhKien lk = (LinhKien) sp;
+               
+      // Điếm linh kiện
+               for (int i = 0; i < VAL_LOAI_LINH_KIEN.length; i++) {
+                  if (VAL_LOAI_LINH_KIEN[i].equalsIgnoreCase(lk.getLoaiLinhKien())) {
+                     cntLK[i]++;
+                     break;
+                  }
                }
-            }
          }
       }
-       System.out.println("\n--- THỐNG KÊ CHI TIẾT THEO LOẠI SẢN PHẨM ---");
+
+      // ==================== HIỂN THỊ KẾT QUẢ ====================
+      
+      System.out.println("\n========== THỐNG KÊ SẢN PHẨM THEO LOẠI ==========");
+      
+      // Tổng quan
       System.out.println("\n--- TỔNG QUAN ---");
-      System.out.printf("Tổng số Laptop:     %d\n", slLT);
-      System.out.printf("Tổng số Linh kiện:  %d\n", slLK);
-      System.out.printf("Tổng cộng:          %d sản phẩm (SKUs)\n", getSoLuongSanPham());
-      if(slLT > 0 ){
-         //thống kê theo từng loại CPU
-         System.out.println("CHI TIẾT LAPTOP THEO CPU !");
-         for(int i = 0 ; i < VAL_CPU.length;i++){
-            if(cntCPU[i] > 0 ){
-               System.out.printf("%-10s: %d sản phẩm\n", VAL_CPU[i], cntCPU[i]);
-            }
+      System.out.printf("Tổng số Laptop      : %d\n", slLT);
+      System.out.printf("Tổng số Linh kiện   : %d\n", slLK);
+      System.out.printf("Tổng cộng           : %d sản phẩm\n", getSoLuongSanPham());
+
+      // Chi tiết Laptop
+      if (slLT > 0) {
+         System.out.println("\n--- CHI TIẾT LAPTOP ---");
+         
+         // Thống kê theo CPU
+         System.out.println("\n>>> Thống kê theo CPU:");
+         System.out.println("┌────────────────────────┬─────────────┐");
+         System.out.println("│      LOẠI CPU          │  SỐ LƯỢNG   │");
+         System.out.println("├────────────────────────┼─────────────┤");
+         for (int i = 0; i < VAL_CPU.length; i++) {
+               if (cntCPU[i] > 0) {
+                  System.out.printf("│ %-22s │ %11d │\n", VAL_CPU[i], cntCPU[i]);
+               }
          }
-         //thống kê theo từng loại RAM
-         System.out.println("CHI TIẾT LAPTOP THEO RAM !");
+         System.out.println("└────────────────────────┴─────────────┘");
+
+         // Thống kê theo RAM
+         System.out.println("\n>>> Thống kê theo RAM:");
+         System.out.println("┌────────────────────────┬─────────────┐");
+         System.out.println("│      LOẠI RAM          │  SỐ LƯỢNG   │");
+         System.out.println("├────────────────────────┼─────────────┤");
          for (int i = 0; i < VAL_RAM.length; i++) {
-            if (cntRAM[i] > 0) {
-               System.out.printf("%-10s: %d sản phẩm\n", VAL_RAM[i], cntRAM[i]);
-            }
+               if (cntRAM[i] > 0) {
+                  System.out.printf("│ %-22s │ %11d │\n", VAL_RAM[i], cntRAM[i]);
+               }
          }
+         System.out.println("└────────────────────────┴─────────────┘");
       }
-      if(slLK > 0){
-         System.out.println("CHI TIẾT LINH KIỆN THEO LOẠI !");
+
+      // Chi tiết Linh kiện
+      if (slLK > 0) {
+         System.out.println("\n--- CHI TIẾT LINH KIỆN ---");
+         System.out.println("┌────────────────────────┬─────────────┐");
+         System.out.println("│   LOẠI LINH KIỆN       │  SỐ LƯỢNG   │");
+         System.out.println("├────────────────────────┼─────────────┤");
          for (int i = 0; i < VAL_LOAI_LINH_KIEN.length; i++) {
-            if (cntLK[i] > 0) {
-               System.out.printf("%-12s: %d sản phẩm\n", VAL_LOAI_LINH_KIEN[i], cntLK[i]);
-            }
+               if (cntLK[i] > 0) {
+                  System.out.printf("│ %-22s │ %11d │\n", VAL_LOAI_LINH_KIEN[i], cntLK[i]);
+               }
          }
+         System.out.println("└────────────────────────┴─────────────┘");
       }
+      
+      System.out.println("\n=================================================\n");
    }
 
    private  boolean kiemTraMaSP(String masp){
@@ -630,4 +861,5 @@ public class DanhSachSanPham implements  isList{
       dsSanPham = Arrays.copyOf(dsSanPham,dsSanPham.length+1);
       dsSanPham[dsSanPham.length-1] = sp;
    }
+   
 }

@@ -108,7 +108,7 @@ public class DanhSachLogin {
     // ================== GHI FILE ==================
     public void write() {
         try {
-            FileWriter fw = new FileWriter("do-an-oop-main/data/DanhSachLogin.txt");
+            FileWriter fw = new FileWriter("data\\DanhSachLogin.txt");
             BufferedWriter bw = new BufferedWriter(fw);
             for (Login lg : danhSachLogin) {
                 if (lg == null)
@@ -126,7 +126,7 @@ public class DanhSachLogin {
     // ================== ĐỌC FILE ==================
     public void read() {
         try {
-            File file = new File("do-an-oop-main/data/DanhSachLogin.txt");
+            File file = new File("data\\DanhSachLogin.txt");
             if (!file.exists())
                 return;
 

@@ -1,13 +1,18 @@
 package manager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
+
 import Interface.isList;
 import model.banhang.KhachHang;
-import java.io.*;
-import java.util.*;
 
 public class DanhSachKhachHang implements isList {
     private KhachHang[] danhSachKhachHang;
-    private static final String FILE_PATH = "data/DanhSachKhachHang.txt";
+    private static final String FILE_PATH = "data\\DanhSachKhachHang.txt";
 
     // Constructor
     public DanhSachKhachHang() {
@@ -113,8 +118,8 @@ public class DanhSachKhachHang implements isList {
     public void read(String fileName) {
         File file = new File(fileName);
         if (!file.exists()) {
-            System.out.println("⚠ File không tồn tại: " + fileName);
-            System.out.println("→ Sẽ tạo file mới khi lưu dữ liệu.");
+            System.out.println(" File không tồn tại: " + fileName);
+            System.out.println(" Sẽ tạo file mới khi lưu dữ liệu.");
             return;
         }
 
@@ -148,35 +153,35 @@ public class DanhSachKhachHang implements isList {
                             successCount++;
                         } else {
                             errorCount++;
-                            System.out.println("⚠ Dòng " + lineNumber + ": Dữ liệu không hợp lệ");
+                            System.out.println(" Dòng " + lineNumber + ": Dữ liệu không hợp lệ");
                         }
                     } catch (Exception e) {
                         errorCount++;
-                        System.out.println("⚠ Lỗi đọc dòng " + lineNumber + ": " + e.getMessage());
+                        System.out.println(" Lỗi đọc dòng " + lineNumber + ": " + e.getMessage());
                     }
                 } else {
                     errorCount++;
-                    System.out.println("⚠ Dòng " + lineNumber + ": Thiếu dữ liệu (cần 5 cột)");
+                    System.out.println("Dòng " + lineNumber + ": Thiếu dữ liệu (cần 5 cột)");
                 }
             }
 
-            System.out.println("✓ Đọc file thành công!");
-            System.out.println("  - Số khách hàng hợp lệ: " + successCount);
+            System.out.println(" Đọc file thành công!");
+            System.out.println("   Số khách hàng hợp lệ: " + successCount);
             if (errorCount > 0) {
-                System.out.println("  - Số dòng lỗi: " + errorCount);
+                System.out.println("   Số dòng lỗi: " + errorCount);
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("✗ Lỗi: Không tìm thấy file " + fileName);
+            System.out.println(" Lỗi: Không tìm thấy file " + fileName);
         } catch (Exception e) {
-            System.out.println("✗ Lỗi đọc file: " + e.getMessage());
+            System.out.println(" Lỗi đọc file: " + e.getMessage());
         }
     }
 
     @Override
     public void write(String fileName) {
         if (danhSachKhachHang.length == 0) {
-            System.out.println("⚠ Danh sách trống, không có dữ liệu để ghi!");
+            System.out.println(" Danh sách trống, không có dữ liệu để ghi!");
             return;
         }
 
@@ -191,9 +196,9 @@ public class DanhSachKhachHang implements isList {
             for (KhachHang kh : danhSachKhachHang) {
                 writer.write(kh.toFileString() + "\n");
             }
-            System.out.println("✓ Lưu file thành công: " + fileName);
+            System.out.println(" Lưu file thành công: " + fileName);
         } catch (IOException e) {
-            System.out.println("✗ Lỗi ghi file: " + e.getMessage());
+            System.out.println(" Lỗi ghi file: " + e.getMessage());
         }
     }
 
@@ -211,7 +216,7 @@ public class DanhSachKhachHang implements isList {
         if (choice.equals("Y")) {
             String maTuDong = taoMaKhachHangTuDong();
             khachHangMoi.setMaKhachHang(maTuDong);
-            System.out.println("→ Mã khách hàng tự động: " + maTuDong);
+            System.out.println(" Mã khách hàng tự động: " + maTuDong);
 
             // Nhập các thông tin còn lại
             System.out.print("Nhập họ khách hàng: ");
@@ -259,26 +264,26 @@ public class DanhSachKhachHang implements isList {
 
         // Kiểm tra trùng mã
         if (kiemTraMaTonTai(khachHangMoi.getMaKhachHang())) {
-            System.out.println("✗ Mã khách hàng đã tồn tại!");
+            System.out.println(" Mã khách hàng đã tồn tại!");
             return;
         }
 
         // Validate trước khi thêm
         if (!khachHangMoi.validate()) {
-            System.out.println("✗ Thông tin khách hàng không hợp lệ!");
+            System.out.println(" Thông tin khách hàng không hợp lệ!");
             return;
         }
 
         themVaoMang(khachHangMoi);
         write(FILE_PATH);
-        System.out.println("✓ Thêm khách hàng thành công!");
+        System.out.println(" Thêm khách hàng thành công!");
         khachHangMoi.xuat();
     }
 
     @Override
     public void xoa() {
         if (danhSachKhachHang.length == 0) {
-            System.out.println("⚠ Danh sách khách hàng trống!");
+            System.out.println(" Danh sách khách hàng trống!");
             return;
         }
 
@@ -289,7 +294,7 @@ public class DanhSachKhachHang implements isList {
 
         int viTri = viTriKhachHangTrongDanhSach(maKhachHang);
         if (viTri == -1) {
-            System.out.println("✗ Không tìm thấy khách hàng có mã: " + maKhachHang);
+            System.out.println(" Không tìm thấy khách hàng có mã: " + maKhachHang);
             return;
         }
 
@@ -304,16 +309,16 @@ public class DanhSachKhachHang implements isList {
         if (confirm.equals("Y")) {
             xoaTaiViTri(viTri);
             write(FILE_PATH);
-            System.out.println("✓ Xóa khách hàng thành công!");
+            System.out.println(" Xóa khách hàng thành công!");
         } else {
-            System.out.println("→ Đã hủy thao tác xóa.");
+            System.out.println(" Đã hủy thao tác xóa.");
         }
     }
 
     @Override
     public void sua() {
         if (danhSachKhachHang.length == 0) {
-            System.out.println("⚠ Danh sách khách hàng trống!");
+            System.out.println(" Danh sách khách hàng trống!");
             return;
         }
 
@@ -324,7 +329,7 @@ public class DanhSachKhachHang implements isList {
 
         int viTri = viTriKhachHangTrongDanhSach(ma);
         if (viTri == -1) {
-            System.out.println("✗ Không tìm thấy khách hàng có mã: " + ma);
+            System.out.println(" Không tìm thấy khách hàng có mã: " + ma);
             return;
         }
 
@@ -339,13 +344,13 @@ public class DanhSachKhachHang implements isList {
         System.out.println("4. Sửa địa chỉ");
         System.out.println("5. Sửa số điện thoại");
         System.out.println("0. Hủy");
-        System.out.print("→ Chọn: ");
+        System.out.print(" Chọn: ");
 
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("✗ Lựa chọn không hợp lệ!");
+            System.out.println(" Lựa chọn không hợp lệ!");
             return;
         }
 
@@ -358,12 +363,12 @@ public class DanhSachKhachHang implements isList {
                 // Kiểm tra trùng mã (nếu đổi mã)
                 if (!khMoi.getMaKhachHang().equalsIgnoreCase(ma)
                         && kiemTraMaTonTai(khMoi.getMaKhachHang())) {
-                    System.out.println("✗ Mã khách hàng mới đã tồn tại!");
+                    System.out.println(" Mã khách hàng mới đã tồn tại!");
                     return;
                 }
 
                 if (!khMoi.validate()) {
-                    System.out.println("✗ Thông tin không hợp lệ!");
+                    System.out.println(" Thông tin không hợp lệ!");
                     return;
                 }
 
@@ -414,16 +419,16 @@ public class DanhSachKhachHang implements isList {
                 break;
 
             case 0:
-                System.out.println("→ Đã hủy thao tác sửa.");
+                System.out.println(" Đã hủy thao tác sửa.");
                 return;
 
             default:
-                System.out.println("✗ Lựa chọn không hợp lệ!");
+                System.out.println(" Lựa chọn không hợp lệ!");
                 return;
         }
 
         write(FILE_PATH);
-        System.out.println("✓ Cập nhật thông tin thành công!");
+        System.out.println(" Cập nhật thông tin thành công!");
         System.out.println("\nThông tin sau khi sửa:");
         danhSachKhachHang[viTri].xuat();
     }
@@ -431,7 +436,7 @@ public class DanhSachKhachHang implements isList {
     @Override
     public void in() {
         if (danhSachKhachHang.length == 0) {
-            System.out.println("⚠ Danh sách khách hàng trống!");
+            System.out.println(" Danh sách khách hàng trống!");
             return;
         }
 
@@ -457,10 +462,10 @@ public class DanhSachKhachHang implements isList {
 
         KhachHang kh = timMaKhachHang(ma);
         if (kh != null) {
-            System.out.println("\n✓ Tìm thấy khách hàng:");
+            System.out.println("\n Tìm thấy khách hàng:");
             kh.xuat();
         } else {
-            System.out.println("✗ Không tìm thấy khách hàng có mã: " + ma);
+            System.out.println(" Không tìm thấy khách hàng có mã: " + ma);
         }
     }
 
@@ -483,9 +488,9 @@ public class DanhSachKhachHang implements isList {
         }
 
         if (ketQua.length == 0) {
-            System.out.println("✗ Không tìm thấy khách hàng nào!");
+            System.out.println(" Không tìm thấy khách hàng nào!");
         } else {
-            System.out.println("\n✓ Tìm thấy " + ketQua.length + " khách hàng:");
+            System.out.println("\n Tìm thấy " + ketQua.length + " khách hàng:");
             System.out.println("=".repeat(110));
             System.out.printf("%-10s | %-30s | %-40s | %-12s%n",
                     "Mã KH", "Họ và Tên", "Địa chỉ", "SĐT");
@@ -506,12 +511,12 @@ public class DanhSachKhachHang implements isList {
 
         for (KhachHang kh : danhSachKhachHang) {
             if (kh.getSdt().contains(sdtCanTim)) {
-                System.out.println("\n✓ Tìm thấy khách hàng:");
+                System.out.println("\n Tìm thấy khách hàng:");
                 kh.xuat();
                 return;
             }
         }
-        System.out.println("✗ Không tìm thấy khách hàng nào!");
+        System.out.println(" Không tìm thấy khách hàng nào!");
     }
 
     // Sắp xếp theo mã
@@ -526,7 +531,7 @@ public class DanhSachKhachHang implements isList {
                 }
             }
         }
-        System.out.println("✓ Đã sắp xếp danh sách theo mã khách hàng!");
+        System.out.println("Đã sắp xếp danh sách theo mã khách hàng!");
         in();
     }
 
@@ -542,7 +547,7 @@ public class DanhSachKhachHang implements isList {
                 }
             }
         }
-        System.out.println("✓ Đã sắp xếp danh sách theo tên!");
+        System.out.println(" Đã sắp xếp danh sách theo tên!");
         in();
     }
 
@@ -596,18 +601,17 @@ public class DanhSachKhachHang implements isList {
     }
 
     // Xóa tất cả
-    sss 
     public void xoaTatCa() {
         Scanner sc = new Scanner(System.in);
-        System.out.print("\n⚠ Bạn có chắc chắn muốn xóa TẤT CẢ khách hàng? (YES để xác nhận): ");
+        System.out.print("\n Bạn có chắc chắn muốn xóa TẤT CẢ khách hàng? (YES để xác nhận): ");
         String confirm = sc.nextLine().trim();
 
         if (confirm.equals("YES")) {
             danhSachKhachHang = new KhachHang[0];
             write(FILE_PATH);
-            System.out.println("✓ Đã xóa toàn bộ danh sách khách hàng!");
+            System.out.println(" Đã xóa toàn bộ danh sách khách hàng!");
         } else {
-            System.out.println("→ Đã hủy thao tác xóa.");
+            System.out.println(" Đã hủy thao tác xóa.");
         }
     }
 }

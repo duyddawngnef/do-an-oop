@@ -1,11 +1,17 @@
 package manager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Scanner;
+
 import Interface.isList;
-import model.nhansu.PhongBan;
 import model.nhansu.NhanVien;
+import model.nhansu.PhongBan;
 import utils.TienUtil;
-import java.io.*;
-import java.util.*;
 
 public class DanhSachPhongBan implements isList {
     private static PhongBan[] danhSachPhongBan = new PhongBan[0];
@@ -154,7 +160,7 @@ public class DanhSachPhongBan implements isList {
                 temp[j++] = danhSachPhongBan[i];
         }
         danhSachPhongBan = temp;
-        System.out.println("✅ Đã xóa phòng ban có mã: " + ma);
+        System.out.println(" Đã xóa phòng ban có mã: " + ma);
     }
 
     @Override
@@ -164,7 +170,15 @@ public class DanhSachPhongBan implements isList {
         PhongBan pb = timTheoMa(ma);
 
         if (pb == null) {
-            System.out.println("Không tìm thấy phòng ban có mã đó.");
+            System.out.println(" Không tìm thấy phòng ban có mã: " + ma);
+            return;
+        }
+
+        DanhSachNhanVien dsnv = new DanhSachNhanVien();
+        dsnv.read("data\\DanhSachNhanVien.txt");
+
+        if (dsnv.coNhanVienThuocPhongBan(ma)) {
+            System.out.println("Phòng ban này đang có nhân viên. Không được phép sửa!");
             return;
         }
 
@@ -172,14 +186,45 @@ public class DanhSachPhongBan implements isList {
         System.out.println("------------------------------------");
         System.out.printf("%-10s | %-25s\n", pb.getMaPB(), pb.getTenPB());
 
-        System.out.print("\nNhập tên phòng ban mới (để trống để giữ nguyên): ");
-        String tenMoi = sc.nextLine().trim();
+        System.out.println("\n--- Chọn thông tin cần sửa ---");
+        System.out.println("1. Sửa mã phòng ban");
+        System.out.println("2. Sửa tên phòng ban");
+        System.out.println("0. Hủy");
+        System.out.print("Chọn: ");
+        String chon = sc.nextLine().trim();
 
-        if (!tenMoi.isEmpty()) {
-            pb.setTenPB(tenMoi);
-            System.out.println("✅ Đã sửa tên phòng ban thành: " + tenMoi);
-        } else {
-            System.out.println("Không có thay đổi nào.");
+        switch (chon) {
+            case "1":
+                System.out.print("Nhập mã phòng ban mới: ");
+                String maMoi = sc.nextLine().trim();
+                if (maMoi.isEmpty()) {
+                    System.out.println(" Mã không được để trống!");
+                } else if (timTheoMa(maMoi) != null) {
+                    System.out.println(" Mã phòng ban đã tồn tại!");
+                } else {
+                    pb.setMaPB(maMoi);
+                    System.out.println(" Đã sửa mã phòng ban thành: " + maMoi);
+                }
+                break;
+
+            case "2":
+                System.out.print("Nhập tên phòng ban mới: ");
+                String tenMoi = sc.nextLine().trim();
+                if (!tenMoi.isEmpty()) {
+                    pb.setTenPB(tenMoi);
+                    System.out.println(" Đã sửa tên phòng ban thành: " + tenMoi);
+                } else {
+                    System.out.println("Không có thay đổi nào.");
+                }
+                break;
+
+            case "0":
+                System.out.println(" Hủy thao tác sửa.");
+                break;
+
+            default:
+                System.out.println(" Lựa chọn không hợp lệ!");
+                break;
         }
     }
 
@@ -239,7 +284,7 @@ public class DanhSachPhongBan implements isList {
 
     public void thongKeLuongTheoPhong(NhanVien[] danhSachNV) {
         if (danhSachPhongBan.length == 0 || danhSachNV == null || danhSachNV.length == 0) {
-            System.out.println("⚠️ Không có dữ liệu để thống kê!");
+            System.out.println(" Không có dữ liệu để thống kê!");
             return;
         }
 
@@ -278,7 +323,7 @@ public class DanhSachPhongBan implements isList {
         DanhSachPhongBan dspb = new DanhSachPhongBan();
         DanhSachNhanVien dsnv = new DanhSachNhanVien();
 
-        dspb.read("do-an-oop-main/data/DanhSachPhongBan.txt");
+        dspb.read("data\\DanhSachPhongBan.txt");
         NhanVien[] dsNV = dsnv.getDanhSachNhanVien();
 
         int luaChon;

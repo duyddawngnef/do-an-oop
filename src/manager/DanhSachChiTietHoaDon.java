@@ -10,25 +10,22 @@ import java.util.Scanner;
 
 import Interface.isList;
 import model.banhang.ChiTietHoaDon;
-import model.sanpham.SanPham;
 
 // Triển khai interface isList
 public class DanhSachChiTietHoaDon implements isList {
 
     private ChiTietHoaDon[] danhSachCTHD = new ChiTietHoaDon[0];
     private int soluong = 0;
-    private DanhSachSanPham danhSachSanPham; // Thêm field để lưu reference
 
     // --- HẰNG SỐ ĐƯỜNG DẪN ĐỒNG BỘ ---
-    private static final String FOLDER_CTHD = ".\\data\\DanhSachChiTietHoaDon\\";
-    private static final String FILE_SANPHAM = "data\\DanhSachSanPham.txt";
+
+    private static final String FOLDER_CTHD = "data\\DanhSachChiTietHoaDon\\";
+    // Không còn thao tác trực tiếp với danh sách sản phẩm tại đây
 
     // Static Scanner cho toàn bộ chương trình
     private static final Scanner sc = new Scanner(System.in);
 
-    // Constructor nhận DanhSachSanPham
-    public DanhSachChiTietHoaDon(DanhSachSanPham danhSachSanPham) {
-        this.danhSachSanPham = danhSachSanPham;
+    public DanhSachChiTietHoaDon() {
     }
 
     public int getSoluong() {
@@ -70,52 +67,7 @@ public class DanhSachChiTietHoaDon implements isList {
         return null;
     }
 
-    private DanhSachSanPham taiDanhSachSanPham() {
-        if (danhSachSanPham == null) {
-            System.err.println(" Lỗi: DanhSachSanPham chưa được khởi tạo!");
-            return null;
-        }
-
-        // Kiểm tra xem danh sách có dữ liệu không
-        if (danhSachSanPham.getDanhSachSanPham().length == 0) {
-            System.err.println(" Cảnh báo: Danh sách sản phẩm đang trống!");
-        }
-
-        return danhSachSanPham;
-    }
-
-    private void capNhatTonKhoKhiSua(SanPham sanPham, DanhSachSanPham danhSachSP, int soLuongCu, int soLuongMoi) {
-        int tonKhoSauHoan = sanPham.getSoLuongTon() + soLuongCu;
-
-        int tonKhoCuoiCung = tonKhoSauHoan - soLuongMoi;
-
-        sanPham.setSoLuongTon(tonKhoCuoiCung);
-        danhSachSP.write(FILE_SANPHAM);
-        System.out.println(" Đã cập nhật tồn kho. Tồn kho mới: " + tonKhoCuoiCung);
-    }
-    private boolean hoanLaiTonKho(ChiTietHoaDon cthd) {
-        DanhSachSanPham danhSachSP = taiDanhSachSanPham();
-        SanPham sanPham = (danhSachSP != null) ? danhSachSP.timTheoMa(cthd.getMaSanPham()) : null;
-
-        if (sanPham == null) {
-            System.err.println(" Không tìm thấy sản phẩm trong hệ thống! Không thể hoàn kho.");
-            return false;
-        }
-
-        int soLuongHoanLai = cthd.getSoLuongSP();
-        int tonKhoMoi = sanPham.getSoLuongTon() + soLuongHoanLai;
-
-        try {
-            sanPham.setSoLuongTon(tonKhoMoi);
-            danhSachSP.write(FILE_SANPHAM);
-            System.out.println(" Đã hoàn lại " + soLuongHoanLai + " sản phẩm vào tồn kho. Tồn kho mới: " + tonKhoMoi);
-            return true;
-        } catch (Exception e) {
-            System.err.println(" Lỗi khi ghi lại file sản phẩm: " + e.getMessage());
-            return false;
-        }
-    }
-
+    // Bỏ mọi logic tồn kho khỏi lớp danh sách chi tiết hóa đơn
 
     // ********* GHI FILE *********
     @Override
@@ -129,7 +81,7 @@ public class DanhSachChiTietHoaDon implements isList {
         String fileName = FOLDER_CTHD + maHoaDon + ".txt";
 
         try (BufferedWriter myWriter = new BufferedWriter(new FileWriter(fileName, false))) {
-            for(int i = 0; i < this.soluong; ++i) {
+            for (int i = 0; i < this.soluong; ++i) {
                 // Định dạng file: MaSP;DonGia;SoLuongSP;TongGia
                 String data = this.danhSachCTHD[i].getMaSanPham() + ";" +
                         this.danhSachCTHD[i].getDonGia() + ";" +
@@ -153,7 +105,7 @@ public class DanhSachChiTietHoaDon implements isList {
         this.soluong = 0;
 
         try (Scanner myReader = new Scanner(file)) {
-            while(myReader.hasNextLine()) {
+            while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] value = data.split(";");
 
@@ -173,7 +125,8 @@ public class DanhSachChiTietHoaDon implements isList {
             }
 
         } catch (FileNotFoundException e) {
-            System.err.println(" Cảnh báo: Không tìm thấy file chi tiết hóa đơn cho mã: " + maHoaDon + " (Đường dẫn: " + fileName + ")");
+            System.err.println(" Cảnh báo: Không tìm thấy file chi tiết hóa đơn cho mã: " + maHoaDon + " (Đường dẫn: "
+                    + fileName + ")");
         }
     }
 
@@ -187,50 +140,27 @@ public class DanhSachChiTietHoaDon implements isList {
 
     public void them(String maHoaDon) {
         int tiepTuc = 1;
-        DanhSachSanPham danhSachSP = taiDanhSachSanPham();
-        if (danhSachSP == null) return;
 
         do {
             System.out.println("\n=== Thêm Chi Tiết Hóa Đơn ===");
             ChiTietHoaDon cthd = new ChiTietHoaDon();
-            cthd.nhap(); // Giả sử hàm nhập tối giản (chỉ lấy MaSP, SoLuong)
-
+            cthd.nhap(); // Giả sử hàm nhập tối giản (chỉ lấy MaSP, SoLuong
             String maSP = cthd.getMaSanPham();
-            SanPham sp = danhSachSP.timTheoMa(maSP);
-
-            if (sp == null) {
-                System.err.println(" Sản phẩm không tồn tại. Hủy thêm chi tiết.");
-            } else if (!this.kiemTraMaSPDaThem(maSP)) {
+            if (!this.kiemTraMaSPDaThem(maSP)) {
                 System.err.println("Lỗi: Sản phẩm này đã tồn tại trong chi tiết hóa đơn hiện tại!");
             } else {
-                // --- LOGIC TRỪ TỒN KHO TẠI ĐÂY ---
-                int soLuongYeuCau = cthd.getSoLuongSP();
-                int tonKhoHienTai = sp.getSoLuongTon();
-
-                if (soLuongYeuCau > tonKhoHienTai) {
-                    System.err.println(" Không đủ tồn kho! Chỉ còn " + tonKhoHienTai + " sản phẩm.");
-                } else {
-                    // Trừ tồn kho
-                    sp.setSoLuongTon(tonKhoHienTai - soLuongYeuCau);
-                    danhSachSP.write(FILE_SANPHAM);
-                    System.out.println(" Đã trừ tồn kho. Tồn kho mới: " + sp.getSoLuongTon());
-
-                    // Gán giá & thêm vào danh sách
-                    cthd.setDonGia(sp.getDonGiaBan());
-                    cthd.capNhatTongGia();
-                    cthd.setMaHoaDon(maHoaDon);
-                    this.them(cthd);
-                    System.out.println(" Thêm chi tiết hóa đơn thành công!");
-                }
+                cthd.capNhatTongGia();
+                cthd.setMaHoaDon(maHoaDon);
+                this.them(cthd);
+                System.out.println(" Thêm chi tiết hóa đơn thành công!");
             }
-
             System.out.print("Bạn có muốn nhập chi tiết hóa đơn tiếp không (1: Có / 0: Dừng lại!)? ");
             try {
                 tiepTuc = Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException e) {
                 tiepTuc = 0;
             }
-        } while(tiepTuc == 1);
+        } while (tiepTuc == 1);
     }
 
     // ********* XÓA *********
@@ -247,22 +177,14 @@ public class DanhSachChiTietHoaDon implements isList {
             return;
         }
 
-        for(int i = 0; i < this.soluong; ++i) {
+        for (int i = 0; i < this.soluong; ++i) {
             if (maSP.equalsIgnoreCase(this.danhSachCTHD[i].getMaSanPham())) {
 
-                // === BỔ SUNG: Hoàn lại tồn kho trước khi xóa ===
-                ChiTietHoaDon cthdCanXoa = this.danhSachCTHD[i];
-                if (hoanLaiTonKho(cthdCanXoa)) {
-                    // Tiếp tục xóa nếu hoàn lại thành công
-                    System.arraycopy(this.danhSachCTHD, i + 1, this.danhSachCTHD, i, this.soluong - i - 1);
-                    --this.soluong;
-                    this.danhSachCTHD = Arrays.copyOf(this.danhSachCTHD, this.soluong);
-                    System.out.println(" Đã xóa chi tiết sản phẩm có mã: " + maSP);
-                    return;
-                } else {
-                    System.err.println(" Lỗi: Không thể hoàn lại tồn kho khi xóa. Hủy xóa.");
-                    return;
-                }
+                System.arraycopy(this.danhSachCTHD, i + 1, this.danhSachCTHD, i, this.soluong - i - 1);
+                --this.soluong;
+                this.danhSachCTHD = Arrays.copyOf(this.danhSachCTHD, this.soluong);
+                System.out.println(" Đã xóa chi tiết sản phẩm có mã: " + maSP);
+                return;
             }
         }
         System.out.println(" Không tìm thấy sản phẩm có mã: " + maSP + " để xóa.");
@@ -288,36 +210,21 @@ public class DanhSachChiTietHoaDon implements isList {
         int soLuongMoi = -1;
         int soLuongCu = cthd.getSoLuongSP();
 
-        DanhSachSanPham danhSachSP = taiDanhSachSanPham();
-        SanPham sanPham = (danhSachSP != null) ? danhSachSP.timTheoMa(maSP) : null;
-
-        if (sanPham == null) {
-            System.err.println(" Lỗi: Không tìm thấy sản phẩm trong hệ thống! Không thể sửa.");
-            return;
-        }
-
-        int tonKhoHienTai = sanPham.getSoLuongTon();
-        int tonKhoSauHoan = tonKhoHienTai + soLuongCu; // Tồn kho sau khi hoàn lại số lượng cũ
-
-        // 1. Nhập số lượng mới và kiểm tra tồn kho
+        // 1. Nhập số lượng mới (không thao tác tồn kho tại đây)
         do {
-            System.out.print("Nhập số lượng mới bạn muốn sửa (Tồn kho sau khi hoàn: " + tonKhoSauHoan + "): ");
+            System.out.print("Nhập số lượng mới bạn muốn sửa: ");
             try {
                 soLuongMoi = Integer.parseInt(sc.nextLine().trim());
                 if (soLuongMoi <= 0) {
                     System.err.println("Số lượng phải lớn hơn 0.");
-                } else if (soLuongMoi > tonKhoSauHoan) {
-                    System.err.println(" Số lượng mới vượt quá tồn kho hiện có (" + tonKhoSauHoan + ").");
-                    soLuongMoi = -1;
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Lỗi: Vui lòng nhập số nguyên.");
             }
         } while (soLuongMoi <= 0);
 
-        // 2. Cập nhật tồn kho và chi tiết hóa đơn
+        // 2. Cập nhật chi tiết hóa đơn
         if (soLuongMoi != soLuongCu) {
-            capNhatTonKhoKhiSua(sanPham, danhSachSP, soLuongCu, soLuongMoi);
             cthd.setSoLuongSP(soLuongMoi);
             cthd.capNhatTongGia();
             System.out.println(" Đã cập nhật số lượng và tổng giá cho sản phẩm " + maSP);
@@ -325,7 +232,6 @@ public class DanhSachChiTietHoaDon implements isList {
             System.out.println(" Số lượng không thay đổi, hủy thao tác sửa.");
         }
     }
-
 
     @Override
     public void timTheoMa() {
@@ -344,7 +250,6 @@ public class DanhSachChiTietHoaDon implements isList {
         }
     }
 
-
     @Override
     public void in() {
         this.xuat();
@@ -355,7 +260,7 @@ public class DanhSachChiTietHoaDon implements isList {
             System.out.println("\n========== CHI TIẾT HÓA ĐƠN ==========");
             System.out.println("Tổng số mục hàng: " + this.soluong);
             ChiTietHoaDon.xuatHeader();
-            for(int i = 0; i < this.soluong; ++i) {
+            for (int i = 0; i < this.soluong; ++i) {
                 this.danhSachCTHD[i].xuat();
             }
             ChiTietHoaDon.xuatFooter();
@@ -376,5 +281,66 @@ public class DanhSachChiTietHoaDon implements isList {
 
     public void traCuuThongTinChiTietHoaDon() {
         this.timTheoMa();
+    }
+
+    /**
+     * Đọc TẤT CẢ các file chi tiết hóa đơn trong thư mục FOLDER_CTHD
+     * và load vào danh sách hiện tại
+     */
+    public void readAll() {
+        File folder = new File(FOLDER_CTHD);
+
+        // Kiểm tra thư mục có tồn tại không
+        if (!folder.exists() || !folder.isDirectory()) {
+            System.err.println(" Thư mục chi tiết hóa đơn không tồn tại: " + FOLDER_CTHD);
+            return;
+        }
+
+        // Reset danh sách trước khi đọc
+        this.danhSachCTHD = new ChiTietHoaDon[0];
+        this.soluong = 0;
+
+        // Lấy tất cả file .txt trong thư mục
+        File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
+
+        if (files == null || files.length == 0) {
+            System.out.println(" Không có file chi tiết hóa đơn nào trong thư mục.");
+            return;
+        }
+
+        int soFileDoc = 0;
+        System.out.println("\n Đang đọc " + files.length + " file chi tiết hóa đơn...");
+
+        // Đọc từng file
+        for (File file : files) {
+            try (Scanner myReader = new Scanner(file)) {
+                // Lấy mã hóa đơn từ tên file (bỏ đuôi .txt)
+                String maHoaDon = file.getName().replace(".txt", "");
+
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+                    String[] value = data.split(";");
+
+                    if (value.length >= 4) {
+                        try {
+                            ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon();
+                            chiTietHoaDon.setMaSanPham(value[0].trim());
+                            chiTietHoaDon.setDonGia(Integer.parseInt(value[1].trim()));
+                            chiTietHoaDon.setSoLuongSP(Integer.parseInt(value[2].trim()));
+                            chiTietHoaDon.setMaHoaDon(maHoaDon);
+
+                            this.them(chiTietHoaDon);
+                        } catch (NumberFormatException e) {
+                            System.err.println(" Lỗi định dạng số trong file " + file.getName() + ": " + data);
+                        }
+                    }
+                }
+                soFileDoc++;
+            } catch (FileNotFoundException e) {
+                System.err.println(" Không thể đọc file: " + file.getName());
+            }
+        }
+
+        System.out.println(" Đã đọc thành công " + soFileDoc + " file, tổng " + this.soluong + " chi tiết hóa đơn.");
     }
 }

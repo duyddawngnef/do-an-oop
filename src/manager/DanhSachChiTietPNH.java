@@ -2,264 +2,371 @@ package manager;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
+import Interface.isList;
 import model.nhaphang.ChiTietPNH;
 
-public class DanhSachChiTietPNH {
-    private ChiTietPNH[] ds = new ChiTietPNH[0];
+public class DanhSachChiTietPNH implements isList {
 
-    // 🔹 Nhập danh sách phiếu và sản phẩm trong từng phiếu
-    public void nhap() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Nhập số lượng phiếu nhập: ");
-        int soPhieu = Integer.parseInt(sc.nextLine());
+    private ChiTietPNH[] danhSachChiTiet = new ChiTietPNH[0];
+    private int soluong = 0;
 
-        for (int i = 0; i < soPhieu; i++) {
-            System.out.println("\n=== Phiếu nhập thứ " + (i + 1) + " ===");
-            System.out.print("Nhập mã phiếu nhập: ");
-            String maPN = sc.nextLine();
+    // --- HẰNG SỐ ĐƯỜNG DẪN ĐỘNG BỘ ---
+    private static final String FOLDER_CTPNH = "data\\DanhSachChiTietPNH\\";
+    // Không thao tác trực tiếp với danh sách sản phẩm tại đây
 
-            System.out.print("Nhập số lượng sản phẩm trong phiếu này: ");
-            int soSP = Integer.parseInt(sc.nextLine());
+    // Static Scanner cho toàn bộ chương trình
+    private static final Scanner sc = new Scanner(System.in);
 
-            for (int j = 0; j < soSP; j++) {
-                System.out.println("\n--- Sản phẩm thứ " + (j + 1) + " của phiếu " + maPN + " ---");
-                ChiTietPNH ct = new ChiTietPNH();
-                ct.setMaPhieuNhap(maPN);
-                System.out.print("Nhập mã sản phẩm: ");
-                ct.setMaSanPham(sc.nextLine());
-                System.out.print("Nhập số lượng: ");
-                ct.setSoLuong(Integer.parseInt(sc.nextLine()));
-                System.out.print("Nhập đơn giá: ");
-                ct.setDonGia(Double.parseDouble(sc.nextLine()));
+    public DanhSachChiTietPNH() {
+    }
 
-                int n = ds.length;
-                ChiTietPNH[] temp = new ChiTietPNH[n + 1];
-                System.arraycopy(ds, 0, temp, 0, n);
-                temp[n] = ct;
-                ds = temp;
+    public int getSoluong() {
+        return this.soluong;
+    }
+
+    public ChiTietPNH viTri(int n) {
+        if (n >= 0 && n < this.soluong) {
+            return this.danhSachChiTiet[n];
+        }
+        return null;
+    }
+
+    public double getTongTien() {
+        double tong = 0;
+        for (int i = 0; i < this.soluong; ++i) {
+            tong += this.danhSachChiTiet[i].thanhTien();
+        }
+        return tong;
+    }
+
+    // Tái sử dụng hàm thêm nội bộ
+    public void them(ChiTietPNH chiTiet) {
+        this.danhSachChiTiet = Arrays.copyOf(this.danhSachChiTiet, this.danhSachChiTiet.length + 1);
+        this.danhSachChiTiet[this.soluong] = chiTiet;
+        ++this.soluong;
+    }
+
+    private boolean kiemTraMaSPDaThem(String maSP) {
+        return timTheoMaSP(maSP) == null;
+    }
+
+    public ChiTietPNH timTheoMaSP(String ma) {
+        for (int i = 0; i < this.soluong; ++i) {
+            if (ma.equalsIgnoreCase(this.danhSachChiTiet[i].getMaSP())) {
+                return this.danhSachChiTiet[i];
             }
+        }
+        return null;
+    }
+
+    // Bỏ toàn bộ logic tồn kho khỏi lớp danh sách chi tiết PNH
+
+    // ********* GHI FILE *********
+    @Override
+    public void write(String maPhieu) {
+        // Đảm bảo thư mục tồn tại
+        File folder = new File(FOLDER_CTPNH);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String fileName = FOLDER_CTPNH + maPhieu + ".txt";
+
+        try (BufferedWriter myWriter = new BufferedWriter(new FileWriter(fileName, false))) {
+            for (int i = 0; i < this.soluong; ++i) {
+                // Định dạng file: MaSP;SoLuong;DonGia;ThanhTien
+                myWriter.write(this.danhSachChiTiet[i].toString());
+                myWriter.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("  Lỗi khi ghi chi tiết phiếu nhập vào file " + fileName + ": " + e.getMessage());
         }
     }
 
-    // 🔹 Xuất danh sách phân loại theo mã phiếu
-    public void xuat() {
-        if (ds.length == 0) {
-            System.out.println("Danh sách chi tiết phiếu nhập rỗng!");
-            return;
-        }
+    // ********* ĐỌC FILE *********
+    @Override
+    public void read(String maPhieu) {
+        String fileName = FOLDER_CTPNH + maPhieu + ".txt";
+        File file = new File(fileName);
+        this.danhSachChiTiet = new ChiTietPNH[0];
+        this.soluong = 0;
 
-        // Lấy danh sách mã phiếu duy nhất
-        String[] maPhieu = new String[0];
-        for (ChiTietPNH ct : ds) {
-            boolean exists = false;
-            for (String ma : maPhieu) {
-                if (ma.equalsIgnoreCase(ct.getMaPhieuNhap())) {
-                    exists = true;
-                    break;
+        try (Scanner myReader = new Scanner(file)) {
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                String[] value = data.split(";");
+
+                if (value.length >= 3) {
+                    try {
+                        ChiTietPNH chiTiet = new ChiTietPNH();
+                        chiTiet.setMaSP(value[0].trim());
+                        chiTiet.setSoLuong(Integer.parseInt(value[1].trim()));
+                        chiTiet.setDonGia(Double.parseDouble(value[2].trim()));
+
+                        this.them(chiTiet);
+                    } catch (NumberFormatException e) {
+                        System.err.println(" Lỗi định dạng số khi đọc file chi tiết phiếu nhập trên dòng: " + data);
+                    }
                 }
             }
-            if (!exists) {
-                String[] temp = new String[maPhieu.length + 1];
-                System.arraycopy(maPhieu, 0, temp, 0, maPhieu.length);
-                temp[maPhieu.length] = ct.getMaPhieuNhap();
-                maPhieu = temp;
-            }
-        }
 
-        // Xuất theo từng phiếu
-        for (String maPN : maPhieu) {
-            System.out.println("\n📦 PHIẾU NHẬP: " + maPN);
-            System.out.printf("%-10s %-15s %-10s %-10s %-10s\n",
-                    "MaPN", "MaSP", "SoLuong", "DonGia", "ThanhTien");
-            for (ChiTietPNH ct : ds) {
-                if (ct.getMaPhieuNhap().equalsIgnoreCase(maPN))
-                    ct.xuat();
-            }
+        } catch (FileNotFoundException e) {
+            System.err.println(" Cảnh báo: Không tìm thấy file chi tiết phiếu nhập cho mã: " + maPhieu + " (Đường dẫn: "
+                    + fileName + ")");
         }
     }
 
-    // 🔹 Thêm sản phẩm cho 1 phiếu đã có hoặc mới
-    public void themSanPhamChoPhieu() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Nhập mã phiếu nhập cần thêm sản phẩm: ");
-        String maPN = sc.nextLine();
+    // ********* THÊM *********
+    @Override
+    public void them() {
+        System.out.print("Nhập mã phiếu nhập đang thao tác để gắn vào chi tiết: ");
+        String maPhieu = sc.nextLine().trim();
+        this.them(maPhieu);
+    }
 
-        System.out.print("Nhập số lượng sản phẩm muốn thêm cho phiếu " + maPN + ": ");
-        int soSP = Integer.parseInt(sc.nextLine());
+    public void them(String maPhieu) {
+        int tiepTuc = 1;
 
-        for (int i = 0; i < soSP; i++) {
-            System.out.println("\n--- Sản phẩm thứ " + (i + 1) + " ---");
-            ChiTietPNH ct = new ChiTietPNH();
-            ct.setMaPhieuNhap(maPN);
+        do {
+            System.out.println("\n=== THÊM CHI TIẾT PHIẾU NHẬP ===");
+            
             System.out.print("Nhập mã sản phẩm: ");
-            ct.setMaSanPham(sc.nextLine());
-            System.out.print("Nhập số lượng: ");
-            ct.setSoLuong(Integer.parseInt(sc.nextLine()));
-            System.out.print("Nhập đơn giá: ");
-            ct.setDonGia(Double.parseDouble(sc.nextLine()));
+            String maSP = sc.nextLine().trim();
 
-            int n = ds.length;
-            ChiTietPNH[] temp = new ChiTietPNH[n + 1];
-            System.arraycopy(ds, 0, temp, 0, n);
-            temp[n] = ct;
-            ds = temp;
-        }
+            if (!this.kiemTraMaSPDaThem(maSP)) {
+                System.err.println("Lỗi: Sản phẩm này đã tồn tại trong chi tiết phiếu nhập hiện tại!");
+            } else {
+                int soLuongNhap = -1;
+                do {
+                    System.out.print("Nhập số lượng nhập: ");
+                    try {
+                        soLuongNhap = Integer.parseInt(sc.nextLine().trim());
+                        if (soLuongNhap <= 0) {
+                            System.err.println("Số lượng phải lớn hơn 0.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Lỗi: Vui lòng nhập số nguyên.");
+                    }
+                } while (soLuongNhap <= 0);
 
-        System.out.println("✅ Đã thêm " + soSP + " sản phẩm cho phiếu nhập " + maPN);
+                double donGiaNhap = -1;
+                do {
+                    System.out.print("Nhập đơn giá nhập: ");
+                    try {
+                        donGiaNhap = Double.parseDouble(sc.nextLine().trim());
+                        if (donGiaNhap <= 0) {
+                            System.err.println("Đơn giá phải lớn hơn 0.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Lỗi: Vui lòng nhập số hợp lệ.");
+                    }
+                } while (donGiaNhap <= 0);
+
+                // Tạo chi tiết
+                ChiTietPNH ctpnh = new ChiTietPNH(maSP, soLuongNhap, donGiaNhap);
+                
+                this.them(ctpnh);
+                System.out.println("  Thêm chi tiết phiếu nhập thành công!");
+            }
+
+            System.out.print("Bạn có muốn nhập chi tiết phiếu nhập tiếp không (1: Có / 0: Dừng lại!)? ");
+            try {
+                tiepTuc = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                tiepTuc = 0;
+            }
+        } while (tiepTuc == 1);
     }
 
-    // 🔹 Xóa toàn bộ sản phẩm của 1 phiếu nhập
-    public void xoaTheoPhieu() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Nhập mã phiếu nhập cần xóa toàn bộ sản phẩm: ");
-        String maPN = sc.nextLine();
+    // ********* XÓA *********
+    @Override
+    public void xoa() {
+        System.out.print("Nhập mã sản phẩm cần xóa khỏi chi tiết phiếu nhập: ");
+        String maSP = sc.nextLine().trim();
+        this.xoa(maSP);
+    }
 
-        int count = 0;
-        for (ChiTietPNH ct : ds)
-            if (ct.getMaPhieuNhap().equalsIgnoreCase(maPN))
-                count++;
-
-        if (count == 0) {
-            System.out.println("Không tìm thấy phiếu nhập " + maPN);
+    public void xoa(String maSP) {
+        if (this.soluong == 0) {
+            System.out.println("Danh sách chi tiết phiếu nhập trống!");
             return;
         }
 
-        ChiTietPNH[] temp = new ChiTietPNH[ds.length - count];
-        int j = 0;
-        for (ChiTietPNH ct : ds) {
-            if (!ct.getMaPhieuNhap().equalsIgnoreCase(maPN))
-                temp[j++] = ct;
+        for (int i = 0; i < this.soluong; ++i) {
+            if (maSP.equalsIgnoreCase(this.danhSachChiTiet[i].getMaSP())) {
+
+                System.arraycopy(this.danhSachChiTiet, i + 1, this.danhSachChiTiet, i, this.soluong - i - 1);
+                --this.soluong;
+                this.danhSachChiTiet = Arrays.copyOf(this.danhSachChiTiet, this.soluong);
+                System.out.println("  Đã xóa chi tiết sản phẩm có mã: " + maSP);
+                return;
+            }
         }
-        ds = temp;
-        System.out.println("Đã xóa toàn bộ sản phẩm của phiếu nhập " + maPN);
+        System.out.println(" Không tìm thấy sản phẩm có mã: " + maSP + " để xóa.");
     }
 
-    // 🔹 Xóa sản phẩm cụ thể trong 1 phiếu nhập (có thể 1 hoặc nhiều mã)
-    public void xoaSanPhamTrongPhieu() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Nhập mã phiếu nhập: ");
-        String maPN = sc.nextLine();
+    // ********* SỬA *********
+    @Override
+    public void sua() {
+        System.out.print("Nhập mã sản phẩm cần sửa số lượng trong chi tiết phiếu nhập: ");
+        String maSP = sc.nextLine().trim();
 
-        System.out.print("Nhập các mã sản phẩm cần xóa (cách nhau bằng dấu cách): ");
-        String[] maSPXoa = sc.nextLine().split("\\s+");
-
-        int count = 0;
-        for (ChiTietPNH ct : ds)
-            for (String maSP : maSPXoa)
-                if (ct.getMaPhieuNhap().equalsIgnoreCase(maPN)
-                        && ct.getMaSanPham().equalsIgnoreCase(maSP))
-                    count++;
-
-        if (count == 0) {
-            System.out.println("Không tìm thấy sản phẩm nào khớp để xóa!");
+        ChiTietPNH ctpnh = timTheoMaSP(maSP);
+        if (ctpnh == null) {
+            System.out.println(" Không tìm thấy sản phẩm có mã " + maSP + " trong chi tiết phiếu nhập này.");
             return;
         }
 
-        ChiTietPNH[] temp = new ChiTietPNH[ds.length - count];
-        int j = 0;
-        for (ChiTietPNH ct : ds) {
-            boolean xoa = false;
-            for (String maSP : maSPXoa) {
-                if (ct.getMaPhieuNhap().equalsIgnoreCase(maPN)
-                        && ct.getMaSanPham().equalsIgnoreCase(maSP)) {
-                    xoa = true;
-                    break;
+        this.suaSoLuong(ctpnh);
+    }
+
+    public void suaSoLuong(ChiTietPNH ctpnh) {
+        String maSP = ctpnh.getMaSP();
+        int soLuongMoi = -1;
+        int soLuongCu = ctpnh.getSoLuong();
+
+        // 1. Nhập số lượng mới và kiểm tra
+        do {
+            System.out.print("Nhập số lượng mới (số lượng cũ: " + soLuongCu + "): ");
+            try {
+                soLuongMoi = Integer.parseInt(sc.nextLine().trim());
+                if (soLuongMoi <= 0) {
+                    System.err.println("Số lượng phải lớn hơn 0.");
                 }
+            } catch (NumberFormatException e) {
+                System.err.println("Lỗi: Vui lòng nhập số nguyên.");
             }
-            if (!xoa)
-                temp[j++] = ct;
+        } while (soLuongMoi <= 0);
+
+        // 2. Cập nhật chi tiết phiếu nhập
+        if (soLuongMoi != soLuongCu) {
+            ctpnh.setSoLuong(soLuongMoi);
+            System.out.println("  Đã cập nhật số lượng cho sản phẩm " + maSP);
+        } else {
+            System.out.println(" Số lượng không thay đổi, hủy thao tác sửa.");
         }
-        ds = temp;
-        System.out.println("Đã xóa " + count + " sản phẩm trong phiếu " + maPN);
     }
 
-    // 🔹 Xuất tổng tiền theo từng phiếu
-    public void xuatTongTienTheoPhieu() {
-        if (ds.length == 0) {
-            System.out.println("Danh sách chi tiết rỗng!");
+    @Override
+    public void timTheoMa() {
+        System.out.print("Nhập mã sản phẩm cần tìm trong chi tiết phiếu nhập: ");
+        String maSP = sc.nextLine().trim();
+
+        ChiTietPNH ctpnh = this.timTheoMaSP(maSP);
+
+        if (ctpnh != null) {
+            System.out.println("\n  Đã tìm thấy chi tiết sản phẩm:");
+            System.out.printf("%-15s | %-15s | %-15s | %-15s\n", 
+                    "Mã SP", "Số Lượng", "Đơn Giá", "Thành Tiền");
+            System.out.println("-".repeat(70));
+            System.out.printf("%-15s | %-15d | %-15.0f | %-15.0f\n",
+                    ctpnh.getMaSP(), ctpnh.getSoLuong(), ctpnh.getDonGia(), ctpnh.thanhTien());
+        } else {
+            System.out.println("Không tìm thấy sản phẩm có mã " + maSP + " trong chi tiết phiếu nhập này.");
+        }
+    }
+
+    @Override
+    public void in() {
+        this.xuat();
+    }
+
+    public void xuat() {
+        if (this.soluong > 0) {
+            System.out.println("\n========== CHI TIẾT PHIẾU NHẬP HÀNG ==========");
+            System.out.println("Tổng số mục hàng: " + this.soluong);
+            System.out.printf("%-15s | %-15s | %-15s | %-15s\n", 
+                    "Mã SP", "Số Lượng", "Đơn Giá", "Thành Tiền");
+            System.out.println("-".repeat(70));
+            
+            for (int i = 0; i < this.soluong; ++i) {
+                ChiTietPNH ct = this.danhSachChiTiet[i];
+                System.out.printf("%-15s | %-15d | %-15.0f | %-15.0f\n",
+                        ct.getMaSP(), ct.getSoLuong(), ct.getDonGia(), ct.thanhTien());
+            }
+            System.out.println("=".repeat(70));
+            System.out.printf("TỔNG GIÁ TRỊ CÁC MỤC HÀNG: %,.0f VND\n", this.getTongTien());
+        } else {
+            System.out.println("\n Danh sách chi tiết phiếu nhập trống!");
+        }
+    }
+
+    public void suaThongTinTheoMa(String maSP) {
+        ChiTietPNH ctpnh = timTheoMaSP(maSP);
+        if (ctpnh != null) {
+            suaSoLuong(ctpnh);
+        } else {
+            System.out.println("Không tìm thấy sản phẩm có mã " + maSP + " trong chi tiết phiếu nhập này.");
+        }
+    }
+
+    public void traCuuThongTinChiTiet() {
+        this.timTheoMa();
+    }
+
+    /**
+     * Đọc TẤT CẢ các file chi tiết phiếu nhập trong thư mục FOLDER_CTPNH
+     * và load vào danh sách hiện tại
+     */
+    public void readAll() {
+        File folder = new File(FOLDER_CTPNH);
+
+        // Kiểm tra thư mục có tồn tại không
+        if (!folder.exists() || !folder.isDirectory()) {
+            System.err.println(" Thư mục chi tiết phiếu nhập không tồn tại: " + FOLDER_CTPNH);
             return;
         }
 
-        String[] maPhieu = new String[0];
-        for (ChiTietPNH ct : ds) {
-            boolean exists = false;
-            for (String ma : maPhieu)
-                if (ma.equalsIgnoreCase(ct.getMaPhieuNhap()))
-                    exists = true;
-            if (!exists) {
-                String[] temp = new String[maPhieu.length + 1];
-                System.arraycopy(maPhieu, 0, temp, 0, maPhieu.length);
-                temp[maPhieu.length] = ct.getMaPhieuNhap();
-                maPhieu = temp;
-            }
-        }
+        // Reset danh sách trước khi đọc
+        this.danhSachChiTiet = new ChiTietPNH[0];
+        this.soluong = 0;
 
-        System.out.println("\nTỔNG TIỀN THEO PHIẾU:");
-        for (String maPN : maPhieu) {
-            double tong = 0;
-            for (ChiTietPNH ct : ds)
-                if (ct.getMaPhieuNhap().equalsIgnoreCase(maPN))
-                    tong += ct.thanhTien();
-            System.out.printf(" - %s: %.2f\n", maPN, tong);
-        }
-    }
+        // Lấy tất cả file .txt trong thư mục
+        File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
 
-    // 🔹 Ghi danh sách ra file
-    // 🔹 Ghi danh sách ra file (phân tách bằng ;)
-    public void ghiFile(String tenFile) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(tenFile))) {
-            for (ChiTietPNH ct : ds) {
-                bw.write(ct.getMaPhieuNhap() + ";" +
-                        ct.getMaSanPham() + ";" +
-                        ct.getSoLuong() + ";" +
-                        ct.getDonGia());
-                bw.newLine();
-            }
-            System.out.println("✅ Đã ghi file " + tenFile);
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
-        }
-    }
-
-    // 🔹 Đọc danh sách từ file (phân tách bằng ;)
-    public void docFile(String tenFile) {
-        File file = new File(tenFile);
-        if (!file.exists()) {
-            System.out.println("⚠️ File chưa tồn tại, sẽ tạo mới khi ghi.");
+        if (files == null || files.length == 0) {
+            System.out.println(" Không có file chi tiết phiếu nhập nào trong thư mục.");
             return;
         }
 
-        try (Scanner sc = new Scanner(file)) {
-            ds = new ChiTietPNH[0];
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
-                if (line.isEmpty())
-                    continue;
+        int soFileDoc = 0;
+        System.out.println("\n Đang đọc " + files.length + " file chi tiết phiếu nhập...");
 
-                String[] value = line.split(";");
-                if (value.length < 4)
-                    continue;
+        // Đọc từng file
+        for (File file : files) {
+            try (Scanner myReader = new Scanner(file)) {
+                // Lấy mã phiếu nhập từ tên file (bỏ đuôi .txt)
+                String maPhieu = file.getName().replace(".txt", "");
 
-                ChiTietPNH ct = new ChiTietPNH();
-                ct.setMaPhieuNhap(value[0].trim());
-                ct.setMaSanPham(value[1].trim());
-                ct.setSoLuong(Integer.parseInt(value[2].trim()));
-                ct.setDonGia(Double.parseDouble(value[3].trim()));
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+                    String[] value = data.split(";");
 
-                int n = ds.length;
-                ChiTietPNH[] temp = new ChiTietPNH[n + 1];
-                System.arraycopy(ds, 0, temp, 0, n);
-                temp[n] = ct;
-                ds = temp;
+                    if (value.length >= 3) {
+                        try {
+                            ChiTietPNH chiTiet = new ChiTietPNH();
+                            chiTiet.setMaSP(value[0].trim());
+                            chiTiet.setSoLuong(Integer.parseInt(value[1].trim()));
+                            chiTiet.setDonGia(Double.parseDouble(value[2].trim()));
+
+                            this.them(chiTiet);
+                        } catch (NumberFormatException e) {
+                            System.err.println(" Lỗi định dạng số trong file " + file.getName() + ": " + data);
+                        }
+                    }
+                }
+                soFileDoc++;
+            } catch (FileNotFoundException e) {
+                System.err.println(" Không thể đọc file: " + file.getName());
             }
-            System.out.println("✅ Đọc file thành công!");
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
         }
-    }
 
+        System.out.println("  Đã đọc thành công " + soFileDoc + " file, tổng " + this.soluong + " chi tiết phiếu nhập.");
+    }
 }
