@@ -1,50 +1,50 @@
-
 package model.nhaphang;
 
 public class ChiTietPNH {
     private String maSP;
-    private String tenSP;
-    private int soLuongNhap;
-    private double donGiaNhap;
-    private double thanhTienNhap;
+    private int soLuong;
+    private double donGia;
 
-    public ChiTietPNH(String maSP, String tenSP, int soLuongNhap, double donGiaNhap) {
+    public ChiTietPNH() {
+    }
+
+    public ChiTietPNH(String maSP, int soLuong, double donGia) {
         this.maSP = maSP;
-        this.tenSP = tenSP;
-        this.soLuongNhap = soLuongNhap;
-        this.donGiaNhap = donGiaNhap;
-        this.thanhTienNhap = soLuongNhap * donGiaNhap;
+        this.soLuong = soLuong;
+        this.donGia = donGia;
     }
 
-    public double getThanhTienNhap() {
-        return thanhTienNhap;
+    public double thanhTien() {
+        return soLuong * donGia;
     }
 
+    @Override
+    public String toString() {
+        return maSP + ";" + soLuong + ";" + donGia + ";" + thanhTien();
+    }
+
+    // GET/SET
     public String getMaSP() {
         return maSP;
     }
 
-    public String getTenSP() {
-        return tenSP;
+    public void setMaSP(String maSP) {
+        this.maSP = maSP;
     }
 
-    public int getSoLuongNhap() {
-        return soLuongNhap;
+    public int getSoLuong() {
+        return soLuong;
     }
 
-    public double getDonGiaNhap() {
-        return donGiaNhap;
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
     }
 
-    public void hienThi() {
-    System.out.printf("Mã SP: %s | Tên SP: %s | SL: %d | Đơn giá: %.2f | Thành tiền: %.2f\n",
-            maSP, tenSP, soLuongNhap, donGiaNhap, thanhTienNhap);
-}
-    @Override
-    public String toString() {
-        return String.format("%-10s %-20s %-10d %-15.2f %-15.2f",
-                maSP, tenSP, soLuongNhap, donGiaNhap, thanhTienNhap);
+    public double getDonGia() {
+        return donGia;
     }
-    
 
+    public void setDonGia(double donGia) {
+        this.donGia = donGia;
+    }
 }
