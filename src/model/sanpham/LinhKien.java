@@ -1,9 +1,11 @@
 package model.sanpham; 
 
+import java.util.Scanner;
+
 public class LinhKien extends SanPham {
     private String loaiLinhKien;
     private String thongSoKyThuat;
-    
+    Scanner scanner = new Scanner(System.in);
     public LinhKien(){
         loaiLinhKien = "";
         thongSoKyThuat = "";
@@ -24,7 +26,17 @@ public class LinhKien extends SanPham {
         this.loaiLinhKien = lk.loaiLinhKien;
         this.thongSoKyThuat = lk.thongSoKyThuat;
     }
-    
+    public static String[] getLoaiLinhKienHopLe(){
+        return VAL_LOAI_LINH_KIEN.clone();
+    }
+    public static boolean  kiemTraHopLe(String namelk){
+        for(String val : VAL_LOAI_LINH_KIEN){
+            if(namelk.equalsIgnoreCase(val)){
+                return  true;
+            }
+        }
+        return false;
+    }
     @Override
     //ghi đè hàm nhập(SanPham)
     public void nhap(){
@@ -37,12 +49,7 @@ public class LinhKien extends SanPham {
             System.out.println("\nMời Nhập Loại Linh Kiện :");
             //xóa khoảng trắng thừa
             this.loaiLinhKien = scanner.nextLine().trim();
-            for(String ValLk : VAL_LOAI_LINH_KIEN){
-                if(ValLk.equalsIgnoreCase(this.loaiLinhKien)){
-                    isLK = true;
-                    break;
-                }
-            }
+            isLK = kiemTraHopLe(loaiLinhKien);
             if (!isLK) {
                 System.out.println("Lỗi :Loại Linh Kiện không hợp lệ !!");
             }
@@ -80,5 +87,9 @@ public class LinhKien extends SanPham {
 
     public void setThongSoKyThuat(String thongSoKyThuat) {
         this.thongSoKyThuat = thongSoKyThuat;
+    }
+    public void dsLoaiLinhKienHoTro() {
+        String[] loais = getLoaiLinhKienHopLe();
+        System.out.println("\nDanh sách Linh Kiện hỗ trợ: " + java.util.Arrays.toString(loais));
     }
 }
