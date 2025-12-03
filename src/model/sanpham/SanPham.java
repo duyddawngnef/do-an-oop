@@ -7,7 +7,6 @@ public abstract class SanPham {
     private String tenSP;
     private int soLuongTon;
     private int donGiaBan;
-    Scanner scanner = new Scanner(System.in);
     //bảo vệ bằng protected
     protected  SanPham() {
         maSP = "";
@@ -31,6 +30,7 @@ public abstract class SanPham {
     }
 
     public void nhap() {
+         Scanner scanner = new Scanner(System.in);
         // mã sản phẩm không được null 
         do { 
             System.out.print("\nMời Nhập Mã Sản Phẩm :");
